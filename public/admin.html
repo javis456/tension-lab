@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tension Lab · Admin — by Mensin Tennis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-page="admin">
+
+<header class="site">
+  <div class="site-in">
+    <a class="site-brand" href="/">
+      <span class="logo">TENSION<b>·</b>LAB</span>
+      <span class="by">by Mensin Tennis</span>
+    </a>
+    <nav class="site-nav">
+      <a href="/" data-nav="setup">Setup String</a>
+      <a href="/compare.html" data-nav="compare">String Comparison</a>
+    </nav>
+    <div class="site-auth" id="siteAuth"></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div id="denyView" class="hide">
+    <div class="page-head"><h1>Admin access required</h1>
+      <p>This area is for administrators. <a href="/account.html?next=/admin.html">Log in with an admin account</a> to manage the string and racket catalog.</p>
+    </div>
+  </div>
+
+  <div id="adminView" class="hide">
+    <div class="page-head">
+      <h1>Catalog admin</h1>
+      <p>Add, edit and remove strings and rackets. Everything you add flows through the same physics-based rating model — so new products compare fairly against every existing one.</p>
+    </div>
+
+    <!-- AI UPDATE -->
+    <div class="ai-box">
+      <h3>AI Update — add a product in seconds</h3>
+      <p class="sub">Type a brand and product name, pick the type, and let the model fetch specs, gauges and ratings from the web against our official rubric. You'll get an editable preview before anything is saved.</p>
+      <div class="ai-row">
+        <div>
+          <label style="display:block;font-family:'IBM Plex Mono';font-size:10px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Type</label>
+          <div class="selwrap"><select id="aiType"><option value="string">String</option><option value="racket">Racket</option></select></div>
+        </div>
+        <div>
+          <label style="display:block;font-family:'IBM Plex Mono';font-size:10px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Brand</label>
+          <input type="text" id="aiBrand" placeholder="e.g. Solinco" autocomplete="off">
+        </div>
+        <div>
+          <label style="display:block;font-family:'IBM Plex Mono';font-size:10px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Product name</label>
+          <input type="text" id="aiName" placeholder="e.g. Hyper-G Soft" autocomplete="off">
+        </div>
+        <button class="btn" id="aiBtn">AI Update ✦</button>
+      </div>
+      <div class="ai-status" id="aiStatus"></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="admin-tabs" id="adminTabs">
+      <button data-tab="strings" class="on">Strings</button>
+      <button data-tab="rackets">Rackets</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap">
+      <span class="cmp-count" id="listCount"></span>
+      <button class="btn ghost sm" id="addBtn">＋ Add manually</button>
+    </div>
+    <div id="listWrap"></div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-back hide" id="modalBack">
+  <div class="modal">
+    <div class="modal-h"><h3 id="modalTitle">Edit</h3><button class="modal-x" id="modalX">×</button></div>
+    <div class="modal-b" id="modalBody"></div>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="foot-in">
+    <div class="fb">TENSION<b>·</b>LAB <span style="font-family:'IBM Plex Mono';font-weight:400;font-size:11px;color:var(--ink-faint)">by Mensin Tennis</span></div>
+    <div>Admin portal · changes are live immediately.</div>
+  </div>
+</footer>
+
+<script src="/js/common.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

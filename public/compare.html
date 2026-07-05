@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tension Lab · String Comparison — by Mensin Tennis</title>
+<meta name="description" content="Compare every tennis string side by side — price, material, power, control, spin, comfort, feel, durability and tension hold. Tension Lab by Mensin Tennis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-page="compare">
+
+<header class="site">
+  <div class="site-in">
+    <a class="site-brand" href="/">
+      <span class="logo">TENSION<b>·</b>LAB</span>
+      <span class="by">by Mensin Tennis</span>
+    </a>
+    <nav class="site-nav">
+      <a href="/" data-nav="setup">Setup String</a>
+      <a href="/compare.html" data-nav="compare">String Comparison</a>
+    </nav>
+    <div class="site-auth" id="siteAuth"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <h1>String Comparison</h1>
+    <p>Every string in the lab, scored on the same reference frame so the numbers are directly comparable. Sort any column, filter by material, or search a brand. Scores are 0–100 tendencies from the same physics-based model that powers Setup String.</p>
+  </div>
+
+  <div class="note-strip">
+    <b>Reading the scores.</b> Each string is measured solo (same string in mains &amp; crosses) on a neutral 16×19, 98 in², RA 64 racket at 52 lb, so differences reflect the string itself. Your racket and tension will shift absolute numbers — use <a href="/">Setup String</a> for your exact configuration.
+  </div>
+
+  <div class="panel">
+    <div class="panel-b">
+      <div class="cmp-controls">
+        <div class="grow">
+          <input type="text" id="cmpSearch" class="cmp-search" placeholder="Search brand or string…" autocomplete="off">
+        </div>
+        <span class="cmp-count" id="cmpCount"></span>
+      </div>
+      <div class="cmp-chiprow" id="matChips" style="margin-bottom:14px"></div>
+      <div class="table-scroll">
+        <table class="cmp" id="cmpTable">
+          <thead><tr id="cmpHead"></tr></thead>
+          <tbody id="cmpBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="foot-in">
+    <div class="fb">TENSION<b>·</b>LAB <span style="font-family:'IBM Plex Mono';font-weight:400;font-size:11px;color:var(--ink-faint)">by Mensin Tennis</span></div>
+    <div>A physics-based string configurator. Scores are structured estimates, not lab measurements.</div>
+  </div>
+</footer>
+
+<script src="/js/common.js"></script>
+<script src="/js/compare.js"></script>
+</body>
+</html>

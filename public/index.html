@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tension Lab · Setup String — by Mensin Tennis</title>
+<meta name="description" content="Design and analyze your tennis string setup — string, gauge, tension and racket — with a physics-based model. Tension Lab by Mensin Tennis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-page="setup">
+
+<header class="site">
+  <div class="site-in">
+    <a class="site-brand" href="/">
+      <span class="logo">TENSION<b>·</b>LAB</span>
+      <span class="by">by Mensin Tennis</span>
+    </a>
+    <nav class="site-nav">
+      <a href="/" data-nav="setup">Setup String</a>
+      <a href="/compare.html" data-nav="compare">String Comparison</a>
+    </nav>
+    <div class="site-auth" id="siteAuth"></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="mode-bar">
+    <span class="lead">Design mode</span>
+    <div class="modeswitch" id="modeSwitch">
+      <button data-mode="goal" class="on">Start from a goal</button>
+      <button data-mode="scratch">Build from scratch</button>
+    </div>
+    <div class="top-spacer" style="flex:1"></div>
+    <button class="btn sig sm" id="saveSetupBtn">Save this setup</button>
+  </div>
+
+  <!-- ================= HERO: WOVEN STRING BED ================= -->
+  <div class="panel hero">
+    <div class="bed-stage">
+      <div class="bed-canvas">
+        <svg id="bedSvg" viewBox="0 0 300 380" width="240" height="304" aria-label="String bed preview"></svg>
+      </div>
+      <div class="bed-side">
+        <div>
+          <div class="bed-title" id="bedTitle">Your string bed</div>
+          <div class="bed-sub mono" id="bedSub">configure below to begin</div>
+        </div>
+        <div class="chip-row">
+          <div class="chip">
+            <span class="sw" id="swMain"></span>
+            <div style="min-width:0">
+              <span class="k">Mains · vertical</span>
+              <span class="v" id="chipMain">—</span>
+            </div>
+          </div>
+          <div class="chip">
+            <span class="sw" id="swCross"></span>
+            <div style="min-width:0">
+              <span class="k">Crosses · horizontal</span>
+              <span class="v" id="chipCross">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="tension-read">
+          <div class="box"><div class="lab">Main tension</div><div class="num" id="tMain">—<span> lb</span></div></div>
+          <div class="box"><div class="lab">Cross tension</div><div class="num" id="tCross">—<span> lb</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:22px">
+
+    <!-- ================= LEFT: CONFIGURATION ================= -->
+    <div>
+
+      <!-- GOAL MODE PANEL -->
+      <div class="panel" id="goalPanel">
+        <div class="panel-h"><span class="idx">A</span><h2>Tell the lab what you want</h2><span class="sub">auto-suggest</span></div>
+        <div class="panel-b">
+          <div class="field">
+            <label>Your racket <span class="hint">pattern &amp; stiffness feed the model</span></label>
+            <div class="rk-combo" data-rk="goal"><button type="button" class="rk-trigger"><span class="rk-label">Generic / not sure</span><span class="rk-caret">▾</span></button><div class="rk-pop" hidden><input type="text" class="rk-search" placeholder="Search 140+ rackets…" autocomplete="off"><div class="rk-list"></div></div></div>
+          </div>
+          <div class="field">
+            <label>What should this setup give you?</label>
+            <div class="seg goal" id="goalSeg">
+              <button data-goal="control" class="on">Control</button>
+              <button data-goal="power">Power</button>
+              <button data-goal="spin">Spin</button>
+              <button data-goal="comfort">Comfort</button>
+              <button data-goal="allround">All-round</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>How often do you break strings?</label>
+            <div class="seg" id="breakSeg">
+              <button data-break="rare" class="on">Rarely</button>
+              <button data-break="some">Sometimes</button>
+              <button data-break="often">Chronic breaker</button>
+            </div>
+          </div>
+          <button class="reroll" id="rerollBtn">↻ Suggest another matching setup</button>
+        </div>
+      </div>
+
+      <!-- RACKET (scratch) -->
+      <div class="panel hide" id="racketPanel">
+        <div class="panel-h"><span class="idx">1</span><h2>Racket architecture</h2><span class="sub">pattern · stiffness</span></div>
+        <div class="panel-b">
+          <div class="field">
+            <label>Racket <span class="hint">sets string pattern &amp; stiffness</span></label>
+            <div class="rk-combo" data-rk="scratch"><button type="button" class="rk-trigger"><span class="rk-label">Generic / not sure</span><span class="rk-caret">▾</span></button><div class="rk-pop" hidden><input type="text" class="rk-search" placeholder="Search 140+ rackets…" autocomplete="off"><div class="rk-list"></div></div></div>
+          </div>
+          <div class="spec-line" id="racketSpec"></div>
+        </div>
+      </div>
+
+      <!-- STRING SETUP -->
+      <div class="panel">
+        <div class="panel-h"><span class="idx" id="strIdx">2</span><h2>String setup</h2><span class="sub">mains + crosses</span></div>
+        <div class="panel-b">
+
+          <div class="hybrid-toggle">
+            <label class="switch"><input type="checkbox" id="hybridToggle"><span class="slb"></span></label>
+            <span><b id="hybridLabel" style="font-family:'Space Grotesk'">Full bed</b> — same string in mains &amp; crosses. Flip on for a hybrid.</span>
+          </div>
+
+          <!-- MAINS -->
+          <div class="chain">
+            <div class="chain-h">
+              <span class="dot" id="dotMain"></span>
+              <b>Mains</b><span class="dir">vertical · does most of the work</span>
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label>Brand</label>
+              <div class="selwrap"><select id="brandMain"></select></div>
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label>String</label>
+              <div class="selwrap"><select id="prodMain"></select></div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Gauge <span class="hint">thinner = more spin &amp; feel, less durability</span></label>
+              <div class="selwrap"><select id="gaugeMain"></select></div>
+            </div>
+            <div class="spec-line" id="specMain"></div>
+            <div class="knownfor" id="knownMain"></div>
+          </div>
+
+          <!-- CROSSES -->
+          <div class="chain" id="crossChain">
+            <div class="chain-h">
+              <span class="dot" id="dotCross"></span>
+              <b>Crosses</b><span class="dir">horizontal · shapes comfort &amp; feel</span>
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label>Brand</label>
+              <div class="selwrap"><select id="brandCross"></select></div>
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label>String</label>
+              <div class="selwrap"><select id="prodCross"></select></div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Gauge</label>
+              <div class="selwrap"><select id="gaugeCross"></select></div>
+            </div>
+            <div class="spec-line" id="specCross"></div>
+            <div class="knownfor" id="knownCross"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TENSION -->
+      <div class="panel">
+        <div class="panel-h"><span class="idx" id="tenIdx">3</span><h2>Tension</h2><span class="sub">the single biggest dial</span></div>
+        <div class="panel-b">
+          <div class="slider-row">
+            <div class="top"><span class="lab">Main tension</span><span class="val" id="tMainVal">52<span> lb</span></span></div>
+            <input type="range" id="tenMain" min="35" max="68" value="52">
+            <div class="scale-note"><span>35 · loose / powerful</span><span>68 · tight / precise</span></div>
+          </div>
+          <div class="slider-row" id="crossTenRow">
+            <div class="top"><span class="lab">Cross tension</span><span class="val" id="tCrossVal">50<span> lb</span></span></div>
+            <input type="range" id="tenCross" min="35" max="68" value="50">
+            <div class="scale-note"><span>often 2 lb below mains</span><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRESETS -->
+      <div class="panel">
+        <div class="panel-h"><span class="idx">★</span><h2>Pro combination matrix</h2><span class="sub">reported · approximate</span></div>
+        <div class="panel-b">
+          <p style="font-size:12px;color:var(--ink-faint);margin:0 0 12px;line-height:1.45">Load a setup inspired by a well-known player. These are widely reported approximations for inspiration — real pro specs are customized and change often.</p>
+          <div class="preset-grid" id="presetGrid"></div>
+          <button class="preset-toggle" id="presetToggle" type="button"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RIGHT: RESULTS ================= -->
+    <div>
+      <div class="panel">
+        <div class="panel-h"><span class="idx">→</span><h2>What this does to your game</h2><span class="sub" id="scoreStamp">live readout</span></div>
+        <div class="panel-b">
+          <div class="suggest-note hide" id="suggestNote"></div>
+          <div class="result-top">
+            <div class="radar-box"><svg id="radarSvg" viewBox="0 0 260 260" width="240" height="240"></svg></div>
+            <div class="verdict">
+              <div class="headline" id="verdictHead">—</div>
+              <div class="oneliner" id="verdictOne">Pick a setup and the lab will read out the likely result.</div>
+              <div class="arch-tags" id="archTags"></div>
+            </div>
+          </div>
+
+          <div class="bars" id="bars" style="margin-top:18px"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><span class="idx">⚑</span><h2>Flags &amp; fit</h2><span class="sub">read before you string</span></div>
+        <div class="panel-b">
+          <div id="warnBox"></div>
+          <div class="readout" id="readout"></div>
+          <div class="physics">
+            <h3>The physics behind it</h3>
+            <div id="physicsBox"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <b>How to read this.</b> Scores are a comparative model (0–100) built from string material, geometry, gauge, tension and your racket's pattern &amp; stiffness — blended for hybrids with the mains weighted more heavily, since they carry most of the ball. They describe <b>tendencies</b>, not guarantees: your technique, swing speed, arm history and the specific ball matter as much as the string. "What it's known for" and manufacturer claims are summarized from how each product is marketed and commonly reviewed. Treat this as a smart starting point for your next string job, not a medical or absolute verdict — especially arm-comfort flags, where you should listen to your own body.
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="foot-in">
+    <div class="fb">TENSION<b>·</b>LAB <span style="font-family:'IBM Plex Mono';font-weight:400;font-size:11px;color:var(--ink-faint)">by Mensin Tennis</span></div>
+    <div>A physics-based string configurator. Scores are structured estimates, not lab measurements.</div>
+  </div>
+</footer>
+
+<script src="/js/engine.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/setup.js"></script>
+</body>
+</html>

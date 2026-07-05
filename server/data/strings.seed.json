@@ -1,0 +1,1627 @@
+[
+ {
+  "id": 1,
+  "brand": "Babolat",
+  "name": "VS Touch",
+  "material": "gut",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$$$$",
+  "known_for": "The reference natural gut — the softest, liveliest string made, and the gold standard for comfort and tension stability.",
+  "claim": "Claims elite power, sensitivity and tension maintenance from a high-grade cow-gut construction.",
+  "ratings": {
+   "pw": 90,
+   "co": 66,
+   "sp": 52,
+   "cf": 97,
+   "fe": 95,
+   "du": 42,
+   "tm": 94
+  },
+  "price_usd": 44
+ },
+ {
+  "id": 2,
+  "brand": "Wilson",
+  "name": "Natural Gut",
+  "material": "gut",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.35
+  ],
+  "tier": "$$$$",
+  "known_for": "Federer's mains string. Explosive pocketing power with huge comfort; the classic gut half of a gut/poly hybrid.",
+  "claim": "Claims maximum power, feel and shock absorption.",
+  "ratings": {
+   "pw": 91,
+   "co": 64,
+   "sp": 50,
+   "cf": 96,
+   "fe": 93,
+   "du": 44,
+   "tm": 93
+  },
+  "price_usd": 42
+ },
+ {
+  "id": 3,
+  "brand": "Luxilon",
+  "name": "Natural Gut",
+  "material": "gut",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$$$$",
+  "known_for": "Premium gut tuned to pair with Luxilon polys in hybrids — a touch crisper than most guts.",
+  "claim": "Claims tour-level power with reliable tension maintenance.",
+  "ratings": {
+   "pw": 89,
+   "co": 68,
+   "sp": 53,
+   "cf": 94,
+   "fe": 91,
+   "du": 45,
+   "tm": 92
+  },
+  "price_usd": 36
+ },
+ {
+  "id": 4,
+  "brand": "Tecnifibre",
+  "name": "X-One Biphase",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.24,
+   1.18
+  ],
+  "tier": "$$$",
+  "known_for": "The premium 'gut-alternative' multi — arm-friendly power that many use as the soft half of a hybrid.",
+  "claim": "Claims gut-like comfort and power with better value and durability.",
+  "ratings": {
+   "pw": 85,
+   "co": 58,
+   "sp": 47,
+   "cf": 90,
+   "fe": 82,
+   "du": 52,
+   "tm": 72
+  },
+  "price_usd": 30
+ },
+ {
+  "id": 5,
+  "brand": "Wilson",
+  "name": "NXT",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.24
+  ],
+  "tier": "$$",
+  "known_for": "A benchmark comfort multi — plush, powerful, forgiving. A go-to for players with arm issues.",
+  "claim": "Claims premium comfort and power close to natural gut.",
+  "ratings": {
+   "pw": 83,
+   "co": 57,
+   "sp": 46,
+   "cf": 89,
+   "fe": 79,
+   "du": 54,
+   "tm": 68
+  },
+  "price_usd": 17
+ },
+ {
+  "id": 6,
+  "brand": "Wilson",
+  "name": "Sensation",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.28
+  ],
+  "tier": "$$",
+  "known_for": "A softer, all-day comfort multi at a friendlier price.",
+  "claim": "Claims soft, cushioned feel for touch and comfort.",
+  "ratings": {
+   "pw": 80,
+   "co": 56,
+   "sp": 45,
+   "cf": 90,
+   "fe": 78,
+   "du": 50,
+   "tm": 66
+  },
+  "price_usd": 19
+ },
+ {
+  "id": 7,
+  "brand": "Head",
+  "name": "Velocity MLT",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "A well-rounded comfort multi that balances feel and durability better than most.",
+  "claim": "Claims lively power with all-court comfort.",
+  "ratings": {
+   "pw": 82,
+   "co": 58,
+   "sp": 47,
+   "cf": 87,
+   "fe": 80,
+   "du": 56,
+   "tm": 69
+  },
+  "price_usd": 14
+ },
+ {
+  "id": 8,
+  "brand": "Tecnifibre",
+  "name": "NRG2",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.32,
+   1.24
+  ],
+  "tier": "$$",
+  "known_for": "An ultra-soft multi prized for shock absorption and touch.",
+  "claim": "Claims maximum comfort and elasticity.",
+  "ratings": {
+   "pw": 83,
+   "co": 55,
+   "sp": 45,
+   "cf": 92,
+   "fe": 83,
+   "du": 49,
+   "tm": 67
+  },
+  "price_usd": 19
+ },
+ {
+  "id": 9,
+  "brand": "Yonex",
+  "name": "Rexis",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "A modern comfort multi with a crisp, controlled feel unusual for the category.",
+  "claim": "Claims soft comfort with more control than typical multis.",
+  "ratings": {
+   "pw": 80,
+   "co": 61,
+   "sp": 47,
+   "cf": 86,
+   "fe": 80,
+   "du": 53,
+   "tm": 68
+  },
+  "price_usd": 19
+ },
+ {
+  "id": 10,
+  "brand": "Babolat",
+  "name": "Xcel",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$$$",
+  "known_for": "A powerful, cushioned multi favored by comfort-seeking club players.",
+  "claim": "Claims high power and comfort with a soft response.",
+  "ratings": {
+   "pw": 84,
+   "co": 56,
+   "sp": 46,
+   "cf": 90,
+   "fe": 80,
+   "du": 52,
+   "tm": 69
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 11,
+  "brand": "Prince",
+  "name": "Premier Touch",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$$$",
+  "known_for": "One of the plushest multis available — pure touch and arm comfort.",
+  "claim": "Claims exceptional softness and feel.",
+  "ratings": {
+   "pw": 82,
+   "co": 55,
+   "sp": 45,
+   "cf": 93,
+   "fe": 84,
+   "du": 48,
+   "tm": 66
+  },
+  "price_usd": 22
+ },
+ {
+  "id": 12,
+  "brand": "Dunlop",
+  "name": "Silk",
+  "material": "multi",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "A soft, silky multi aimed squarely at comfort players.",
+  "claim": "Claims smooth, comfortable power.",
+  "ratings": {
+   "pw": 81,
+   "co": 56,
+   "sp": 45,
+   "cf": 89,
+   "fe": 79,
+   "du": 51,
+   "tm": 66
+  },
+  "price_usd": 19
+ },
+ {
+  "id": 13,
+  "brand": "Prince",
+  "name": "Synthetic Gut w/ Duraflex",
+  "material": "syn",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$",
+  "known_for": "The default value string — a dependable, do-everything nylon most shops sell by the reel.",
+  "claim": "Claims all-round performance and durability for the price.",
+  "ratings": {
+   "pw": 70,
+   "co": 64,
+   "sp": 51,
+   "cf": 71,
+   "fe": 66,
+   "du": 70,
+   "tm": 60
+  },
+  "price_usd": 5
+ },
+ {
+  "id": 14,
+  "brand": "Wilson",
+  "name": "Synthetic Gut Power",
+  "material": "syn",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$",
+  "known_for": "The classic beginner/intermediate all-rounder — cheap, reliable, no drama.",
+  "claim": "Claims balanced power and durability.",
+  "ratings": {
+   "pw": 71,
+   "co": 63,
+   "sp": 50,
+   "cf": 70,
+   "fe": 64,
+   "du": 69,
+   "tm": 59
+  },
+  "price_usd": 5
+ },
+ {
+  "id": 15,
+  "brand": "Gosen",
+  "name": "OG-Sheep Micro",
+  "material": "syn",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25
+  ],
+  "tier": "$",
+  "known_for": "A cult-favorite budget nylon known for punching above its price on feel.",
+  "claim": "Claims soft feel and good value.",
+  "ratings": {
+   "pw": 70,
+   "co": 63,
+   "sp": 50,
+   "cf": 73,
+   "fe": 67,
+   "du": 67,
+   "tm": 60
+  },
+  "price_usd": 5
+ },
+ {
+  "id": 16,
+  "brand": "Luxilon",
+  "name": "ALU Power",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.3,
+   1.2
+  ],
+  "tier": "$$$",
+  "known_for": "The most-used poly in pro tennis — the benchmark for crisp, connected control with just enough pop.",
+  "claim": "Claims precision, control and a lively response with an aluminium-infused co-poly.",
+  "ratings": {
+   "pw": 56,
+   "co": 88,
+   "sp": 76,
+   "cf": 44,
+   "fe": 66,
+   "du": 80,
+   "tm": 52
+  },
+  "price_usd": 20
+ },
+ {
+  "id": 17,
+  "brand": "Luxilon",
+  "name": "4G",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$$",
+  "known_for": "The tension-maintenance king — holds its stringbed stiffness longer than almost anything.",
+  "claim": "Claims class-leading tension stability and durability.",
+  "ratings": {
+   "pw": 52,
+   "co": 90,
+   "sp": 74,
+   "cf": 38,
+   "fe": 60,
+   "du": 88,
+   "tm": 78
+  },
+  "price_usd": 18
+ },
+ {
+  "id": 18,
+  "brand": "Yonex",
+  "name": "Poly Tour Pro",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.3,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "An unusually arm-friendly poly — smooth and comfortable while still controlled.",
+  "claim": "Claims a softer, more comfortable poly response.",
+  "ratings": {
+   "pw": 58,
+   "co": 82,
+   "sp": 72,
+   "cf": 58,
+   "fe": 66,
+   "du": 76,
+   "tm": 56
+  },
+  "price_usd": 15
+ },
+ {
+  "id": 19,
+  "brand": "Yonex",
+  "name": "Poly Tour Strike",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A firmer, more precise poly for flat, aggressive hitters who want a locked-in bed.",
+  "claim": "Claims direct, controlled power for hard hitters.",
+  "ratings": {
+   "pw": 55,
+   "co": 86,
+   "sp": 70,
+   "cf": 46,
+   "fe": 64,
+   "du": 80,
+   "tm": 55
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 20,
+  "brand": "Tecnifibre",
+  "name": "Razor Code",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.3,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A control poly with surprising comfort — a favorite for players who find most polys too harsh.",
+  "claim": "Claims control and durability with a softer, arm-friendly feel.",
+  "ratings": {
+   "pw": 57,
+   "co": 84,
+   "sp": 73,
+   "cf": 56,
+   "fe": 67,
+   "du": 78,
+   "tm": 55
+  },
+  "price_usd": 15
+ },
+ {
+  "id": 21,
+  "brand": "Solinco",
+  "name": "Confidential",
+  "material": "polysoft",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "Solinco's softest control poly — precise but easier on the arm than Tour Bite.",
+  "claim": "Claims premium control with a comfortable, muted feel.",
+  "ratings": {
+   "pw": 56,
+   "co": 85,
+   "sp": 74,
+   "cf": 58,
+   "fe": 66,
+   "du": 78,
+   "tm": 56
+  },
+  "price_usd": 17
+ },
+ {
+  "id": 22,
+  "brand": "Head",
+  "name": "Lynx Tour",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A smooth, controlled all-round poly used by many Head-sponsored pros as a base.",
+  "claim": "Claims a blend of control, comfort and spin.",
+  "ratings": {
+   "pw": 57,
+   "co": 83,
+   "sp": 73,
+   "cf": 52,
+   "fe": 65,
+   "du": 78,
+   "tm": 55
+  },
+  "price_usd": 13
+ },
+ {
+  "id": 23,
+  "brand": "Head",
+  "name": "Hawk Touch",
+  "material": "polysoft",
+  "geo": "round",
+  "gauges": [
+   1.3,
+   1.25,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A soft, comfort-oriented poly for players stepping up from multifilament.",
+  "claim": "Claims poly control with multifilament-like comfort.",
+  "ratings": {
+   "pw": 60,
+   "co": 80,
+   "sp": 71,
+   "cf": 62,
+   "fe": 68,
+   "du": 72,
+   "tm": 54
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 24,
+  "brand": "Luxilon",
+  "name": "Element",
+  "material": "polysoft",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$$",
+  "known_for": "Luxilon's soft, warm poly — control with noticeably more give for sensitive arms.",
+  "claim": "Claims a softer, more comfortable poly with good spin.",
+  "ratings": {
+   "pw": 60,
+   "co": 80,
+   "sp": 72,
+   "cf": 64,
+   "fe": 69,
+   "du": 74,
+   "tm": 55
+  },
+  "price_usd": 19
+ },
+ {
+  "id": 25,
+  "brand": "Isospeed",
+  "name": "Cream",
+  "material": "polysoft",
+  "geo": "round",
+  "gauges": [
+   1.2,
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "One of the softest polys on the market — famous for comfort with real spin.",
+  "claim": "Claims elite comfort for a co-poly with strong spin.",
+  "ratings": {
+   "pw": 62,
+   "co": 78,
+   "sp": 75,
+   "cf": 68,
+   "fe": 70,
+   "du": 70,
+   "tm": 52
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 26,
+  "brand": "Weiss Cannon",
+  "name": "Silverstring",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A thin, crisp control poly beloved by string enthusiasts for its clean pocketing.",
+  "claim": "Claims precise control and comfortable crispness.",
+  "ratings": {
+   "pw": 56,
+   "co": 85,
+   "sp": 73,
+   "cf": 50,
+   "fe": 70,
+   "du": 74,
+   "tm": 53
+  },
+  "price_usd": 11
+ },
+ {
+  "id": 27,
+  "brand": "Babolat",
+  "name": "RPM Blast",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3,
+   1.2,
+   1.35
+  ],
+  "tier": "$$$",
+  "known_for": "Nadal's string. An octagonal spin monster — heavy topspin, aggressive control, firm feel.",
+  "claim": "Claims maximum spin and control from a shaped, low-friction co-poly.",
+  "ratings": {
+   "pw": 54,
+   "co": 85,
+   "sp": 90,
+   "cf": 42,
+   "fe": 62,
+   "du": 80,
+   "tm": 50
+  },
+  "price_usd": 18
+ },
+ {
+  "id": 28,
+  "brand": "Solinco",
+  "name": "Hyper-G",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.2,
+   1.15,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A cult-favorite spin/control poly — bright green, biting spin, easy on the wallet.",
+  "claim": "Claims elite spin and control with a soft-for-poly feel.",
+  "ratings": {
+   "pw": 56,
+   "co": 86,
+   "sp": 88,
+   "cf": 50,
+   "fe": 64,
+   "du": 78,
+   "tm": 54
+  },
+  "price_usd": 14
+ },
+ {
+  "id": 29,
+  "brand": "Solinco",
+  "name": "Tour Bite",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.2,
+   1.15
+  ],
+  "tier": "$$",
+  "known_for": "A square-shaped, ultra-biting spin string for players who swing fast and hard.",
+  "claim": "Claims maximum spin and razor control.",
+  "ratings": {
+   "pw": 52,
+   "co": 87,
+   "sp": 92,
+   "cf": 40,
+   "fe": 60,
+   "du": 82,
+   "tm": 50
+  },
+  "price_usd": 14
+ },
+ {
+  "id": 30,
+  "brand": "Luxilon",
+  "name": "ALU Power Rough",
+  "material": "polyspin",
+  "geo": "textured",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$$",
+  "known_for": "The textured ALU — the crosses in many pro hybrids (incl. reported Federer/Djokovic setups) for extra bite.",
+  "claim": "Claims ALU control with added spin from a roughened surface.",
+  "ratings": {
+   "pw": 55,
+   "co": 87,
+   "sp": 82,
+   "cf": 44,
+   "fe": 65,
+   "du": 79,
+   "tm": 52
+  },
+  "price_usd": 21
+ },
+ {
+  "id": 31,
+  "brand": "Head",
+  "name": "Sonic Pro Edge",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A budget-friendly shaped spin poly with crisp control.",
+  "claim": "Claims strong spin and control from a co-poly.",
+  "ratings": {
+   "pw": 55,
+   "co": 83,
+   "sp": 85,
+   "cf": 46,
+   "fe": 62,
+   "du": 78,
+   "tm": 52
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 32,
+  "brand": "Tecnifibre",
+  "name": "Black Code",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.28,
+   1.24,
+   1.18
+  ],
+  "tier": "$$",
+  "known_for": "A pentagonal spin poly with a comfortable edge — spin without the harshest sting.",
+  "claim": "Claims spin and control with more comfort than most shaped polys.",
+  "ratings": {
+   "pw": 56,
+   "co": 83,
+   "sp": 86,
+   "cf": 52,
+   "fe": 64,
+   "du": 76,
+   "tm": 52
+  },
+  "price_usd": 14
+ },
+ {
+  "id": 33,
+  "brand": "Yonex",
+  "name": "Poly Tour Rev",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.2,
+   1.15
+  ],
+  "tier": "$$",
+  "known_for": "A soft-shaped spin poly — big snapback spin with a more comfortable feel.",
+  "claim": "Claims explosive spin with a smooth response.",
+  "ratings": {
+   "pw": 58,
+   "co": 81,
+   "sp": 88,
+   "cf": 54,
+   "fe": 65,
+   "du": 72,
+   "tm": 52
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 34,
+  "brand": "Volkl",
+  "name": "Cyclone",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3,
+   1.2
+  ],
+  "tier": "$",
+  "known_for": "A gear-shaped spin poly that's a perennial best-value spin pick.",
+  "claim": "Claims great spin and control at a low price.",
+  "ratings": {
+   "pw": 55,
+   "co": 82,
+   "sp": 85,
+   "cf": 48,
+   "fe": 61,
+   "du": 76,
+   "tm": 51
+  },
+  "price_usd": 9
+ },
+ {
+  "id": 35,
+  "brand": "MSV",
+  "name": "Focus Hex",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.23,
+   1.18,
+   1.27
+  ],
+  "tier": "$",
+  "known_for": "A six-sided budget spin poly with a loyal enthusiast following.",
+  "claim": "Claims strong spin and control at a bargain price.",
+  "ratings": {
+   "pw": 55,
+   "co": 83,
+   "sp": 86,
+   "cf": 47,
+   "fe": 62,
+   "du": 76,
+   "tm": 51
+  },
+  "price_usd": 9
+ },
+ {
+  "id": 36,
+  "brand": "Signum Pro",
+  "name": "Hyperion",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.24,
+   1.29,
+   1.18
+  ],
+  "tier": "$",
+  "known_for": "A shaped spin poly praised for comfort-to-spin ratio at a low cost.",
+  "claim": "Claims spin and control with reasonable comfort.",
+  "ratings": {
+   "pw": 56,
+   "co": 82,
+   "sp": 85,
+   "cf": 52,
+   "fe": 63,
+   "du": 74,
+   "tm": 51
+  },
+  "price_usd": 10
+ },
+ {
+  "id": 37,
+  "brand": "Solinco",
+  "name": "Barb Wire",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "An aggressively-shaped spin string for extreme, heavy topspin games.",
+  "claim": "Claims tour-level spin and bite.",
+  "ratings": {
+   "pw": 52,
+   "co": 85,
+   "sp": 91,
+   "cf": 42,
+   "fe": 61,
+   "du": 80,
+   "tm": 50
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 38,
+  "brand": "Toroline",
+  "name": "Caviar",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A newer enthusiast-darling spin poly with a crisp, snappy response.",
+  "claim": "Claims high spin and lively control.",
+  "ratings": {
+   "pw": 57,
+   "co": 83,
+   "sp": 87,
+   "cf": 50,
+   "fe": 66,
+   "du": 74,
+   "tm": 53
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 39,
+  "brand": "Diadem",
+  "name": "Solstice Power",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A shaped poly that leans a bit more toward pop than most spin strings.",
+  "claim": "Claims spin and control with added power.",
+  "ratings": {
+   "pw": 60,
+   "co": 81,
+   "sp": 84,
+   "cf": 50,
+   "fe": 64,
+   "du": 76,
+   "tm": 52
+  },
+  "price_usd": 13
+ },
+ {
+  "id": 40,
+  "brand": "Babolat",
+  "name": "Pro Hurricane Tour",
+  "material": "poly",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A durable, firm control poly — the older-school tour workhorse before RPM.",
+  "claim": "Claims control and durability for aggressive baseliners.",
+  "ratings": {
+   "pw": 53,
+   "co": 86,
+   "sp": 78,
+   "cf": 40,
+   "fe": 60,
+   "du": 84,
+   "tm": 53
+  },
+  "price_usd": 15
+ },
+ {
+  "id": 41,
+  "brand": "Kirschbaum",
+  "name": "Pro Line Evolution",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$",
+  "known_for": "A dependable, firm control poly popular with stringers for value and consistency.",
+  "claim": "Claims durable control at a low price.",
+  "ratings": {
+   "pw": 54,
+   "co": 85,
+   "sp": 74,
+   "cf": 44,
+   "fe": 62,
+   "du": 82,
+   "tm": 54
+  },
+  "price_usd": 11
+ },
+ {
+  "id": 42,
+  "brand": "Ashaway",
+  "name": "Kevlar",
+  "material": "kevlar",
+  "geo": "round",
+  "gauges": [
+   1.2,
+   1.1
+  ],
+  "tier": "$$",
+  "known_for": "For chronic string-breakers only — nearly indestructible, extremely stiff, almost always used as hybrid mains.",
+  "claim": "Claims the ultimate durability for players who shred everything else.",
+  "ratings": {
+   "pw": 34,
+   "co": 90,
+   "sp": 56,
+   "cf": 14,
+   "fe": 40,
+   "du": 99,
+   "tm": 32
+  },
+  "price_usd": 13
+ },
+ {
+  "id": 43,
+  "brand": "Ashaway",
+  "name": "MonoGut ZX",
+  "material": "zyex",
+  "geo": "round",
+  "gauges": [
+   1.27,
+   1.22
+  ],
+  "tier": "$$",
+  "known_for": "A rare non-poly monofilament — soft and durable, a comfort control option for arm-sensitive players.",
+  "claim": "Claims poly-like control and durability with far more comfort.",
+  "ratings": {
+   "pw": 68,
+   "co": 74,
+   "sp": 60,
+   "cf": 80,
+   "fe": 72,
+   "du": 84,
+   "tm": 76
+  },
+  "price_usd": 17
+ },
+ {
+  "id": 44,
+  "brand": "Grapplesnake",
+  "name": "Tour M8",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "TennCom's top-ranked all-rounder. An octagonal control poly that's soft-yet-crisp, hugely durable, and does everything at an 8/10 level.",
+  "claim": "Claims elite tension maintenance and snapback longevity with a plush-but-connected feel.",
+  "ratings": {
+   "pw": 57,
+   "co": 86,
+   "sp": 83,
+   "cf": 60,
+   "fe": 72,
+   "du": 86,
+   "tm": 68
+  },
+  "price_usd": 14
+ },
+ {
+  "id": 45,
+  "brand": "Grapplesnake",
+  "name": "Tour Sniper",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A pentagonal control poly billed as a softer, shaped ALU Power — comes partially pre-stretched so it barely loses tension.",
+  "claim": "Claims silky feel, low launch and control 'to the max' with minimal notching.",
+  "ratings": {
+   "pw": 54,
+   "co": 89,
+   "sp": 80,
+   "cf": 56,
+   "fe": 69,
+   "du": 80,
+   "tm": 66
+  },
+  "price_usd": 14
+ },
+ {
+  "id": 46,
+  "brand": "Grapplesnake",
+  "name": "Alpha",
+  "material": "polysoft",
+  "geo": "shaped",
+  "gauges": [
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "Tour Sniper's softer 'sister' — a little more power and give while keeping strong directional control.",
+  "claim": "Claims a softer feel with added power and precise control.",
+  "ratings": {
+   "pw": 60,
+   "co": 82,
+   "sp": 78,
+   "cf": 65,
+   "fe": 71,
+   "du": 76,
+   "tm": 60
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 47,
+  "brand": "Grapplesnake",
+  "name": "Tour Mako",
+  "material": "polyspin",
+  "geo": "textured",
+  "gauges": [
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "A round, power-and-feel Tour poly with a mildly abrasive surface for spin and a predictable launch.",
+  "claim": "Claims new non-metallic additives for feel, durability and spin with a consistent trajectory.",
+  "ratings": {
+   "pw": 64,
+   "co": 80,
+   "sp": 75,
+   "cf": 63,
+   "fe": 73,
+   "du": 76,
+   "tm": 60
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 48,
+  "brand": "Grapplesnake",
+  "name": "Soldier",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A sharp seven-sided spin poly for big hitters who want maximum stability and playing life.",
+  "claim": "Claims class-leading tension maintenance and higher spin than Sniper or M8.",
+  "ratings": {
+   "pw": 54,
+   "co": 87,
+   "sp": 88,
+   "cf": 53,
+   "fe": 66,
+   "du": 88,
+   "tm": 70
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 49,
+  "brand": "Grapplesnake",
+  "name": "Paradox Pro",
+  "material": "polysoft",
+  "geo": "round",
+  "gauges": [
+   1.26
+  ],
+  "tier": "$$$",
+  "known_for": "A metal-infused 'new generation' poly that's counter-intuitively solid, accurate, powerful AND comfortable at once.",
+  "claim": "Claims a vintage precise feel with unusual comfort, power and durability combined.",
+  "ratings": {
+   "pw": 62,
+   "co": 84,
+   "sp": 74,
+   "cf": 66,
+   "fe": 75,
+   "du": 84,
+   "tm": 64
+  },
+  "price_usd": 25
+ },
+ {
+  "id": 50,
+  "brand": "Tru Pro",
+  "name": "Black Knight",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.2,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A muted six-sided control poly with exceptional directional and depth control — softer than most tension-holding polys.",
+  "claim": "Claims elite control and depth for high-racket-speed players; string a touch lower than usual.",
+  "ratings": {
+   "pw": 50,
+   "co": 90,
+   "sp": 82,
+   "cf": 55,
+   "fe": 66,
+   "du": 80,
+   "tm": 64
+  },
+  "price_usd": 7
+ },
+ {
+  "id": 51,
+  "brand": "Tru Pro",
+  "name": "Firewire",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.3,
+   1.25,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A triangular red string rated #1 in spin for three years — one of the biggest ball-bites in the industry.",
+  "claim": "Claims maximum ball bite and tension stability with a crisp but arm-friendly feel.",
+  "ratings": {
+   "pw": 55,
+   "co": 82,
+   "sp": 93,
+   "cf": 52,
+   "fe": 64,
+   "du": 76,
+   "tm": 58
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 52,
+  "brand": "Tru Pro",
+  "name": "Ghost Wire",
+  "material": "polysoft",
+  "geo": "round",
+  "gauges": [
+   1.27,
+   1.22,
+   1.17
+  ],
+  "tier": "$$",
+  "known_for": "Lab-tested as one of the softest co-polys made — round, slick, and a superb arm-friendly hybrid cross.",
+  "claim": "Claims super-soft, arm-friendly play with maximum durability and tension stability.",
+  "ratings": {
+   "pw": 64,
+   "co": 78,
+   "sp": 66,
+   "cf": 75,
+   "fe": 72,
+   "du": 80,
+   "tm": 62
+  },
+  "price_usd": 7
+ },
+ {
+  "id": 53,
+  "brand": "Tru Pro",
+  "name": "Tour Status",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "An eight-sided all-rounder — Tru Pro's most balanced string for power and control.",
+  "claim": "Claims a perfectly balanced blend of power, control and spin.",
+  "ratings": {
+   "pw": 57,
+   "co": 84,
+   "sp": 85,
+   "cf": 55,
+   "fe": 66,
+   "du": 80,
+   "tm": 60
+  },
+  "price_usd": 7
+ },
+ {
+  "id": 54,
+  "brand": "Tru Pro",
+  "name": "Pure Rush",
+  "material": "polysoft",
+  "geo": "shaped",
+  "gauges": [
+   1.23
+  ],
+  "tier": "$$",
+  "known_for": "A lively six-sided poly with extra pop, spin and feel — a softer, more powerful take on Black Knight.",
+  "claim": "Claims added power, spin and feel with good comfort.",
+  "ratings": {
+   "pw": 64,
+   "co": 78,
+   "sp": 80,
+   "cf": 66,
+   "fe": 70,
+   "du": 70,
+   "tm": 55
+  },
+  "price_usd": 6
+ },
+ {
+  "id": 55,
+  "brand": "Tru Pro",
+  "name": "Atomos",
+  "material": "polysoft",
+  "geo": "shaped",
+  "gauges": [
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "A notably plush 'flower-shaped' spin poly — more spin than Black Knight with standout comfort.",
+  "claim": "Claims high spin with an unusually plush, comfortable feel.",
+  "ratings": {
+   "pw": 60,
+   "co": 80,
+   "sp": 84,
+   "cf": 66,
+   "fe": 72,
+   "du": 74,
+   "tm": 58
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 56,
+  "brand": "Toroline",
+  "name": "O-Toro",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.23,
+   1.2,
+   1.25
+  ],
+  "tier": "$$",
+  "known_for": "Toroline's most popular string — a hexagonal spin poly with above-average comfort and tension maintenance.",
+  "claim": "Claims the most spin-friendly Toroline profile with comfort and tension hold above the co-poly average.",
+  "ratings": {
+   "pw": 58,
+   "co": 82,
+   "sp": 86,
+   "cf": 61,
+   "fe": 68,
+   "du": 76,
+   "tm": 62
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 57,
+  "brand": "Toroline",
+  "name": "O-Toro Tour",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.23,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A firmer, control-first O-Toro for big hitters who want precision on full swings.",
+  "claim": "Claims pinpoint accuracy and control on aggressive cuts.",
+  "ratings": {
+   "pw": 54,
+   "co": 87,
+   "sp": 84,
+   "cf": 53,
+   "fe": 66,
+   "du": 80,
+   "tm": 60
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 58,
+  "brand": "Toroline",
+  "name": "Wasabi",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.23,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A square, four-edged spin monster that bites hard while staying comfortable for its class.",
+  "claim": "Claims heavy spin from sharp edges with a comfortable response.",
+  "ratings": {
+   "pw": 56,
+   "co": 84,
+   "sp": 90,
+   "cf": 57,
+   "fe": 66,
+   "du": 76,
+   "tm": 58
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 59,
+  "brand": "Toroline",
+  "name": "Wasabi X",
+  "material": "polysoft",
+  "geo": "shaped",
+  "gauges": [
+   1.23
+  ],
+  "tier": "$$",
+  "known_for": "A softer, ultra-slick Wasabi — great in a full bed and a top hybrid cross for explosive snapback.",
+  "claim": "Claims a slick low-friction surface for snapback with a softer feel.",
+  "ratings": {
+   "pw": 60,
+   "co": 80,
+   "sp": 82,
+   "cf": 66,
+   "fe": 70,
+   "du": 74,
+   "tm": 56
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 60,
+  "brand": "Toroline",
+  "name": "Toro Toro",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.23,
+   1.27
+  ],
+  "tier": "$$",
+  "known_for": "A slick six-sided all-court poly that balances spin and control with a comfortable, lively feel.",
+  "claim": "Claims a well-rounded spin/control response for all-court play.",
+  "ratings": {
+   "pw": 58,
+   "co": 83,
+   "sp": 84,
+   "cf": 59,
+   "fe": 68,
+   "du": 76,
+   "tm": 60
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 61,
+  "brand": "Toroline",
+  "name": "Truffle X",
+  "material": "zyex",
+  "geo": "round",
+  "gauges": [
+   1.3
+  ],
+  "tier": "$$$",
+  "known_for": "Toroline's softest, most elastic string — a breakthrough non-polyester polymer built for comfort and pocketing.",
+  "claim": "Claims unmatched feel and comfort; pair with a slick poly for plush power and snapback.",
+  "ratings": {
+   "pw": 70,
+   "co": 74,
+   "sp": 62,
+   "cf": 85,
+   "fe": 79,
+   "du": 78,
+   "tm": 74
+  },
+  "price_usd": 16
+ },
+ {
+  "id": 62,
+  "brand": "reString",
+  "name": "Zero",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.25,
+   1.2,
+   1.3
+  ],
+  "tier": "$$",
+  "known_for": "A hexagonal spin-and-power specialist with a signature snapback coating and best-in-class tension maintenance.",
+  "claim": "Claims explosive snapback spin and power with superior tension hold.",
+  "ratings": {
+   "pw": 61,
+   "co": 80,
+   "sp": 88,
+   "cf": 56,
+   "fe": 68,
+   "du": 76,
+   "tm": 66
+  },
+  "price_usd": 11
+ },
+ {
+  "id": 63,
+  "brand": "reString",
+  "name": "Sync",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.28,
+   1.23,
+   1.2
+  ],
+  "tier": "$$",
+  "known_for": "A round control string that gets ~80% of ALU Power's feel with far better durability — a favorite modern hybrid cross.",
+  "claim": "Claims ALU-like pocketing and crispness with a slick coating for snapback and long life.",
+  "ratings": {
+   "pw": 56,
+   "co": 86,
+   "sp": 70,
+   "cf": 58,
+   "fe": 74,
+   "du": 82,
+   "tm": 70
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 64,
+  "brand": "reString",
+  "name": "Vivo",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.23,
+   1.28
+  ],
+  "tier": "$$",
+  "known_for": "A firm hexagonal control/spin poly made from recycled polyester — compared favorably to Lynx Tour and Hyper-G.",
+  "claim": "Claims direct feedback, gripping spin and superior tension hold from a sustainable material.",
+  "ratings": {
+   "pw": 55,
+   "co": 85,
+   "sp": 82,
+   "cf": 54,
+   "fe": 66,
+   "du": 78,
+   "tm": 68
+  },
+  "price_usd": 12
+ },
+ {
+  "id": 65,
+  "brand": "Signum Pro",
+  "name": "Firestorm",
+  "material": "poly",
+  "geo": "round",
+  "gauges": [
+   1.24,
+   1.29
+  ],
+  "tier": "$",
+  "known_for": "A round, arm-friendly control poly that's a value-pick base string for comfort-minded players.",
+  "claim": "Claims comfortable control with reliable durability at a low price.",
+  "ratings": {
+   "pw": 58,
+   "co": 82,
+   "sp": 70,
+   "cf": 60,
+   "fe": 66,
+   "du": 78,
+   "tm": 56
+  },
+  "price_usd": 9
+ },
+ {
+  "id": 66,
+  "brand": "Tourna",
+  "name": "Big Hitter Black 7",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.3,
+   1.25,
+   1.2
+  ],
+  "tier": "$",
+  "known_for": "A German-made, 7-sided co-poly repeatedly rated among the highest-spin strings ever tested — big bite with mid-range power and a softer-than-usual poly feel.",
+  "claim": "Claims maximum spin and pinpoint accuracy without the harshness of a stiff poly, at a budget price.",
+  "ratings": {
+   "pw": 56,
+   "co": 82,
+   "sp": 90,
+   "cf": 54,
+   "fe": 62,
+   "du": 80,
+   "tm": 60
+  },
+  "price_usd": 8
+ },
+ {
+  "id": 67,
+  "brand": "Tourna",
+  "name": "Big Hitter Silver 7 Tour",
+  "material": "polyspin",
+  "geo": "shaped",
+  "gauges": [
+   1.3,
+   1.25,
+   1.2
+  ],
+  "tier": "$",
+  "known_for": "Black 7's firmer sibling — a 7-sided spin string awarded best-in-class tension maintenance by TWU labs, for players who want spin that holds its stiffness.",
+  "claim": "Claims elite tension maintenance with top-tier spin and precise control.",
+  "ratings": {
+   "pw": 54,
+   "co": 85,
+   "sp": 86,
+   "cf": 48,
+   "fe": 62,
+   "du": 84,
+   "tm": 74
+  },
+  "price_usd": 9
+ }
+]

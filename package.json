@@ -1,0 +1,20 @@
+{
+  "name": "tension-lab",
+  "version": "1.0.0",
+  "description": "Tension Lab by Mensin Tennis — string setup lab, comparison, and admin catalog with AI ingestion. Supabase + Vercel.",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "setup-db": "node scripts/setup-db.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "main": "api/index.js"
+}

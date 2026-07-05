@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tension Lab · Account — by Mensin Tennis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-page="account">
+
+<header class="site">
+  <div class="site-in">
+    <a class="site-brand" href="/">
+      <span class="logo">TENSION<b>·</b>LAB</span>
+      <span class="by">by Mensin Tennis</span>
+    </a>
+    <nav class="site-nav">
+      <a href="/" data-nav="setup">Setup String</a>
+      <a href="/compare.html" data-nav="compare">String Comparison</a>
+    </nav>
+    <div class="site-auth" id="siteAuth"></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- LOGGED-OUT: auth forms -->
+  <div id="authView">
+    <div class="page-head" style="text-align:center">
+      <h1>Your Tension Lab</h1>
+      <p style="margin:0 auto">Create a free account to save your string setups and pick up where you left off. No email verification, no spam — just your saved configurations.</p>
+    </div>
+    <div class="panel auth-wrap" style="margin-top:20px">
+      <div class="panel-b">
+        <div class="auth-tabs" id="authTabs">
+          <button data-tab="login" class="on">Log in</button>
+          <button data-tab="register">Create account</button>
+        </div>
+        <div class="form-msg err hide" id="authMsg"></div>
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input type="text" id="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-row">
+          <label for="password" id="pwLabel">Password</label>
+          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn" id="authSubmit" style="width:100%">Log in</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGGED-IN: saved setups -->
+  <div id="setupsView" class="hide">
+    <div class="page-head">
+      <h1>Saved setups</h1>
+      <p>Your saved string configurations. Open one in Setup String, or remove any you no longer need.</p>
+    </div>
+    <div id="setupsList"></div>
+    <div style="margin-top:16px"><a class="btn ghost" href="/">＋ Build a new setup</a></div>
+  </div>
+
+</div>
+
+<footer class="site">
+  <div class="foot-in">
+    <div class="fb">TENSION<b>·</b>LAB <span style="font-family:'IBM Plex Mono';font-weight:400;font-size:11px;color:var(--ink-faint)">by Mensin Tennis</span></div>
+    <div>A physics-based string configurator. Scores are structured estimates, not lab measurements.</div>
+  </div>
+</footer>
+
+<script src="/js/common.js"></script>
+<script src="/js/account.js"></script>
+</body>
+</html>
