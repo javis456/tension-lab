@@ -1,6 +1,6 @@
 const express = require("express");
 const { many, one, mapString, mapRacket } = require("../db");
-const { wrap } = require("../middleware/auth");
+const { wrap, currentUser } = require("../middleware/auth");
 const engine = require("../../public/js/engine");
 
 const router = express.Router();
@@ -8,11 +8,21 @@ const router = express.Router();
 // sorted by brand, then name — never random
 const allStrings = async () =>
   (await many("SELECT * FROM strings ORDER BY lower(brand), lower(name)")).map(mapString);
-const allRackets = async () =>
-  (await many("SELECT * FROM rackets ORDER BY (brand='—') DESC, lower(brand), lower(name), year")).map(mapRacket);
+const allRackets = async (userId) => {
+  const rows = await many(
+    `SELECT * FROM rackets
+     WHERE owner_user_id IS NULL OR owner_user_id = $1
+     ORDER BY COALESCE(owner_user_id = $1, false) DESC, (brand='—') DESC, lower(brand), lower(name), year`,
+    [userId == null ? -1 : userId]
+  );
+  return rows.map((r) => Object.assign(mapRacket(r), { mine: userId != null && r.owner_user_id === userId }));
+};
 
 router.get("/strings", wrap(async (req, res) => res.json({ strings: await allStrings() })));
-router.get("/rackets", wrap(async (req, res) => res.json({ rackets: await allRackets() })));
+router.get("/rackets", wrap(async (req, res) => {
+  const u = await currentUser(req);
+  res.json({ rackets: await allRackets(u ? u.id : null) });
+}));
 
 // Score a setup server-side. Body: { racketId, mainId, mainGauge, mainTension, hybrid, crossId, crossGauge, crossTension }
 router.post("/score", wrap(async (req, res) => {
@@ -53,6 +63,16 @@ router.post("/visit", wrap(async (req, res) => {
     "UPDATE site_stats SET value = value + 1 WHERE key='visits' RETURNING value"
   );
   res.json({ visits: row ? Number(row.value) : 0 });
+}));
+
+/* ---- public shared feedback (no auth) ---- */
+router.get("/share/:shareId", wrap(async (req, res) => {
+  const row = await one(
+    `SELECT racket_label, combo_label, algo_scores, player_scores, overall, notes, created_at
+     FROM feedback WHERE share_id=$1`, [req.params.shareId]
+  );
+  if (!row) return res.status(404).json({ error: "This shared feedback was not found." });
+  res.json({ feedback: row, axes: engine.ATTRS });
 }));
 
 module.exports = router;

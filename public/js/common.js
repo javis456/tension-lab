@@ -48,6 +48,32 @@
   };
   window.TL = TL;
 
+  // Loads Google Identity Services and renders a "Sign in with Google" button.
+  // No-op (returns false) if GOOGLE_CLIENT_ID isn't configured on the server.
+  TL.mountGoogleSignIn = async function (containerId, onSuccess) {
+    let cfg;
+    try { cfg = await api("/api/config"); } catch (_) { return false; }
+    if (!cfg || !cfg.googleClientId) return false;
+    await new Promise((res, rej) => {
+      if (window.google && window.google.accounts) return res();
+      const s = document.createElement("script");
+      s.src = "https://accounts.google.com/gsi/client";
+      s.async = true; s.defer = true; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    }).catch(() => {});
+    if (!window.google || !window.google.accounts) return false;
+    window.google.accounts.id.initialize({
+      client_id: cfg.googleClientId,
+      callback: async (resp) => {
+        try { await window.TLAuth.google(resp.credential); onSuccess && onSuccess(); }
+        catch (e) { toast(e.message || "Google sign-in failed", true); }
+      },
+    });
+    const el = document.getElementById(containerId);
+    if (el) window.google.accounts.id.renderButton(el, { theme: "outline", size: "large", width: 320 });
+    return true;
+  };
+
   /* ---------- auth state, exposed as window.TLAuth ---------- */
   const TLAuth = {
     user: null,
@@ -70,6 +96,10 @@
       await api("/api/auth/logout", { method: "POST" });
       this.user = null; renderAuth();
     },
+    async google(credential) {
+      const d = await api("/api/auth/google", { method: "POST", body: JSON.stringify({ credential }) });
+      this.user = d.user; renderAuth(); return d.user;
+    },
   };
   window.TLAuth = TLAuth;
 
@@ -86,7 +116,7 @@
       const admin = u.role === "admin"
         ? '<a class="site-nav-admin btn ghost sm" href="/admin.html">Admin</a>' : "";
       box.innerHTML =
-        '<span class="who">signed in · <b>' + esc(u.email) + "</b></span>" +
+        '<a class="btn sm" href="/account.html">\uD83C\uDFBE Racket Room</a>' +
         admin +
         '<button class="btn ghost sm" id="logoutBtn">Log out</button>';
       const lb = document.getElementById("logoutBtn");

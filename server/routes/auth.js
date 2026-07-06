@@ -38,6 +38,27 @@ router.post("/logout", (req, res) => {
   res.json({ ok: true });
 });
 
+router.post("/google", wrap(async (req, res) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID || "";
+  if (!clientId) return res.status(400).json({ error: "Google sign-in is not configured on this site." });
+  const google = require("../google");
+  let payload;
+  try { payload = await google.verify(String(req.body.credential || ""), clientId); }
+  catch (e) { return res.status(401).json({ error: e.message || "Google sign-in failed." }); }
+  const email = String(payload.email).trim().toLowerCase();
+  let user = await one("SELECT id, email, role FROM users WHERE email=$1", [email]);
+  if (!user) {
+    // create an account for this Google user (random password they never use)
+    const rnd = require("crypto").randomBytes(24).toString("hex");
+    user = await one(
+      "INSERT INTO users (email, password_hash, role) VALUES ($1,$2,'user') RETURNING id, email, role",
+      [email, bcrypt.hashSync(rnd, 10)]
+    );
+  }
+  setAuthCookie(res, user.id);
+  res.json({ user });
+}));
+
 router.get("/me", wrap(async (req, res) => {
   res.json({ user: await currentUser(req) });
 }));

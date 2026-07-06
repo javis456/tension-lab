@@ -715,8 +715,29 @@ async function boot(){
   setMode("goal");
   wireSaveSetup();
   wireSaveFavorites();
-  applyQueryPreselect();
+  await applyQueryPreselect();
   (window.TLAuth && window.TLAuth.ready || Promise.resolve()).then(refreshFavChips);
+}
+
+function loadSetupConfig(cfg){
+  setMode("scratch");
+  const ri = RACKETS.findIndex(r=>String(r._id)===String(cfg.racketId));
+  state.racketIdx = ri>=0?ri:0;
+  syncRacketLabels(); renderRacketSpec();
+  state.hybrid = !!cfg.hybrid; $("hybridToggle").checked=state.hybrid; toggleHybridUI();
+  const mi = STRINGS.findIndex(s=>String(s._id)===String(cfg.mainId));
+  if(mi>=0){ state.mainId=mi; state.mainG=snapGauge(mi, cfg.mainGauge||STRINGS[mi].g[0]); }
+  if(state.hybrid && cfg.crossId!=null){
+    const ci=STRINGS.findIndex(s=>String(s._id)===String(cfg.crossId));
+    if(ci>=0){ state.crossId=ci; state.crossG=snapGauge(ci, cfg.crossGauge||STRINGS[ci].g[0]); }
+  } else { state.crossId=state.mainId; state.crossG=state.mainG; }
+  syncStringSelectors();
+  state.tMain = cfg.mainTension!=null?cfg.mainTension:52;
+  state.tCross = (state.hybrid && cfg.crossTension!=null) ? cfg.crossTension : state.tMain;
+  $("tenMain").value=state.tMain; $("tenCross").value=state.tCross;
+  $("tMainVal").innerHTML=`${state.tMain}<span> lb</span>`; $("tCrossVal").innerHTML=`${state.tCross}<span> lb</span>`;
+  state.suggested=false; $("suggestNote").classList.add("hide");
+  update();
 }
 
 /* ---- favorites: save the current racket / main string ---- */
@@ -746,9 +767,15 @@ function wireSaveFavorites(){
     window.TL.toast(now?'Saved to My Strings':'Removed'); refreshFavChips();
   });
 }
-function applyQueryPreselect(){
+async function applyQueryPreselect(){
   const p=new URLSearchParams(location.search);
-  const rid=p.get('racket'), mid=p.get('main');
+  const sid=p.get('setup'), rid=p.get('racket'), mid=p.get('main');
+  if(sid){
+    try{
+      const r=await fetch('/api/setups/'+encodeURIComponent(sid));
+      if(r.ok){ const d=await r.json(); if(d.setup && d.setup.config){ loadSetupConfig(d.setup.config); return; } }
+    }catch(_){}
+  }
   if(!rid && !mid) return;
   setMode('scratch');
   if(rid){ const i=RACKETS.findIndex(r=>String(r._id)===String(rid)); if(i>=0) state.racketIdx=i; }

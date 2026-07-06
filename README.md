@@ -48,6 +48,7 @@ Requires Node 18+ and a PostgreSQL connection string in `DATABASE_URL`.
 | `ANTHROPIC_API_KEY` | Optional — Claude with **live web search** for AI Update |
 | `DEEPSEEK_API_KEY` | Optional — DeepSeek (cheapest; answers from model knowledge) for AI Update |
 | `AI_MODEL` | Optional default model: `claude-haiku-4-5`, `deepseek-v4-flash`, or `deepseek-v4-pro` |
+| `GOOGLE_CLIENT_ID` | Optional — enables "Sign in with Google" (client ID only, safe to expose) |
 | `PORT` | Local dev only |
 
 Without any AI key, AI Update returns a clearly-labelled offline estimate. Admins pick the model

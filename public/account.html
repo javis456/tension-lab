@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tension Lab · Account — by Mensin Tennis</title>
+<title>Tension Lab · Racket Room — by Mensin Tennis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -27,14 +27,18 @@
 
 <div class="wrap">
 
-  <!-- LOGGED-OUT: auth forms -->
+  <!-- LOGGED-OUT -->
   <div id="authView">
     <div class="page-head" style="text-align:center">
-      <h1>Your Tension Lab</h1>
-      <p style="margin:0 auto">Create a free account to save your string setups and pick up where you left off. No email verification, no spam — just your saved configurations.</p>
+      <h1>Your Racket Room</h1>
+      <p style="margin:0 auto">Create a free account to save your rackets and string combinations, log how they actually played, and share your setups with friends.</p>
     </div>
     <div class="panel auth-wrap" style="margin-top:20px">
       <div class="panel-b">
+        <div id="googleBtnWrap" style="display:none;margin-bottom:16px">
+          <div id="googleBtn" style="display:flex;justify-content:center"></div>
+          <div class="or-divider"><span>or</span></div>
+        </div>
         <div class="auth-tabs" id="authTabs">
           <button data-tab="login" class="on">Log in</button>
           <button data-tab="register">Create account</button>
@@ -53,32 +57,47 @@
     </div>
   </div>
 
-  <!-- LOGGED-IN: my stuff -->
-  <div id="setupsView" class="hide">
+  <!-- LOGGED-IN: RACKET ROOM -->
+  <div id="roomView" class="hide">
     <div class="page-head">
-      <h1>My Tension Lab</h1>
-      <p>Everything you've saved. <b>Setups</b> are full string configurations; <b>rackets</b> and <b>strings</b> are quick favorites you can jump back to any time.</p>
+      <h1>🎾 Racket Room</h1>
+      <p>Your gear, your saved combinations, and your own notes on how each setup actually played.</p>
     </div>
-    <div class="admin-tabs" id="acctTabs">
-      <button data-tab="setups" class="on">My Setups</button>
-      <button data-tab="rackets">My Rackets</button>
-      <button data-tab="strings">My Strings</button>
+    <div class="admin-tabs" id="roomTabs">
+      <button data-tab="rackets" class="on">My Racket</button>
+      <button data-tab="combos">Saved Combination</button>
+      <button data-tab="feedback">Game Feedback</button>
     </div>
 
-    <div id="tab-setups">
-      <div id="setupsList"></div>
-      <div style="margin-top:16px"><a class="btn ghost" href="/">＋ Build a new setup</a></div>
+    <!-- MY RACKET -->
+    <div id="tab-rackets">
+      <div class="note-strip">Add a racket you actually own. It'll appear <b>first</b> in the racket picker on Setup String, so your own frame is one tap away.</div>
+      <div id="myRacketsList"></div>
+      <button class="btn ghost sm" id="addRacketBtn" style="margin-top:12px">＋ Add my racket</button>
     </div>
-    <div id="tab-rackets" class="hide">
-      <div id="racketsList"></div>
-      <div style="margin-top:16px"><a class="btn ghost" href="/">Pick &amp; save a racket in Setup String →</a></div>
+
+    <!-- SAVED COMBINATION -->
+    <div id="tab-combos" class="hide">
+      <div class="note-strip">Every string combination you've saved. Tap <b>Use in Setup</b> to reload it instantly next time you're tuning.</div>
+      <div id="combosList"></div>
+      <div style="margin-top:14px"><a class="btn ghost" href="/">＋ Build a new combination</a></div>
     </div>
-    <div id="tab-strings" class="hide">
-      <div id="stringsList"></div>
-      <div style="margin-top:16px"><a class="btn ghost" href="/compare.html">Save strings from String Comparison →</a></div>
+
+    <!-- GAME FEEDBACK -->
+    <div id="tab-feedback" class="hide">
+      <div class="note-strip">Played a match with one of your setups? Log how it really felt. You'll get a chart comparing the <b>algorithm's prediction</b> against <b>your own rating</b> — and you can share it with friends.</div>
+      <button class="btn sig sm" id="newFeedbackBtn" style="margin-bottom:16px">＋ New game feedback</button>
+      <div id="feedbackList"></div>
     </div>
   </div>
+</div>
 
+<!-- MODAL (add racket / score box) -->
+<div class="modal-back hide" id="modalBack">
+  <div class="modal">
+    <div class="modal-h"><h3 id="modalTitle">…</h3><button class="modal-x" id="modalX">×</button></div>
+    <div class="modal-b" id="modalBody"></div>
+  </div>
 </div>
 
 <footer class="site">
@@ -88,6 +107,8 @@
   </div>
 </footer>
 
+<script src="/js/engine.js"></script>
+<script src="/js/chart.js"></script>
 <script src="/js/common.js"></script>
 <script src="/js/account.js"></script>
 </body>

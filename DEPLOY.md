@@ -19,18 +19,21 @@ inside — that's on purpose; you don't upload it.)
 
 ## ⚡ Already deployed an earlier version? Do this instead
 
-If your site is already live and you're just applying this update, you don't need to redo
+If your site is already live and you're just applying an update, you don't need to redo
 everything — three quick steps:
 
 1. **Update the code.** In your GitHub repo, upload the new files (drag the contents of this
    folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
-2. **Run the database update.** In **Supabase → SQL Editor → New query**, paste the contents of
-   **`supabase/migration-v2.sql`** and click **Run**. This adds the new "favorites" and
-   visitor-counter tables without touching your existing data.
-3. **(Optional) Add DeepSeek** as a cheaper AI option — see *"Choosing your AI model"* below.
+2. **Run the database updates.** In **Supabase → SQL Editor → New query**, run any migration
+   files in the `supabase/` folder you haven't run yet — for this version that's
+   **`supabase/migration-v3.sql`** (it adds the Racket Room's user-rackets and game-feedback
+   tables). If you skipped an earlier update, run `migration-v2.sql` too. They're safe and won't
+   touch your data.
+3. **(Optional) Turn on extras:** DeepSeek as a cheaper AI (see *"Choosing your AI model"*) and
+   **Google sign-in** (see *"Adding Google sign-in"*).
 
-That's it. Your accounts, saved setups, and catalog are all preserved. The rest of this guide
-is the full first-time setup.
+That's it. Your accounts, saved combinations, rackets, and feedback are all preserved. The rest
+of this guide is the full first-time setup.
 
 ---
 
@@ -173,7 +176,41 @@ estimate is always available as a fallback.
 
 ---
 
-## If something looks wrong
+## Adding Google sign-in (optional)
+
+Lets visitors log in with one tap using their Google account. You only need a **Client ID**
+(no secret), and it's free.
+
+1. Go to **https://console.cloud.google.com** → create a project (or pick one).
+2. **APIs & Services → OAuth consent screen** → choose **External**, fill the app name and your
+   email, save. (You can leave it in "Testing" mode; add your own Google email as a test user,
+   or click "Publish" to let anyone in.)
+3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**:
+   - Application type: **Web application**
+   - **Authorized JavaScript origins**: add your live site URL, e.g. `https://your-site.vercel.app`
+     (and `http://localhost:3000` if you test locally). No path, just the origin.
+   - Create, then **copy the Client ID** (it ends in `.apps.googleusercontent.com`).
+4. In **Vercel → Settings → Environment Variables**, add:
+   - `GOOGLE_CLIENT_ID` = *the client ID you copied*
+5. **Deployments → ⋯ → Redeploy.**
+
+Now the **Racket Room** login screen shows a "Sign in with Google" button. (If `GOOGLE_CLIENT_ID`
+isn't set, the button simply doesn't appear — email/password still works.)
+
+> Note: whatever URL you put in "Authorized JavaScript origins" must exactly match the address
+> people visit. If you later add a custom domain, add that origin here too.
+
+---
+
+## What's new in this version (Racket Room)
+
+- **🎾 Racket Room** — the logged-in home, reachable from the top bar, with three tabs:
+  - **My Racket** — add the frames you own; they appear first in Setup String's picker.
+  - **Saved Combination** — your saved string setups, each with one-tap **Use in Setup**.
+  - **Game Feedback** — after a match, rate how a setup really played. You get a chart comparing
+    the **algorithm's prediction** vs **your rating**, plus a private note to your future self —
+    and a **Share** button that creates a public link for friends.
+- **Sign in with Google** (once you add the Client ID above).
 
 - **Site loads but data/login errors:** almost always the `DATABASE_URL`. Re-check that you used
   the **Transaction pooler** string (host ends `.pooler.supabase.com`, port **6543**) and that

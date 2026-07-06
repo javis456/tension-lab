@@ -402,3 +402,32 @@ table.cmp th.fav-col,table.cmp td.fav-col{width:36px;text-align:center;padding-l
 .item-card .b{font-family:"Space Grotesk";font-weight:600;font-size:14px}
 .item-card .meta{font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint);margin-top:3px;line-height:1.5}
 .item-card .actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+
+/* ---- Racket Room: Google divider ---- */
+.or-divider{display:flex;align-items:center;gap:10px;margin:16px 0 4px;color:var(--ink-faint);font-family:"IBM Plex Mono";font-size:11px}
+.or-divider::before,.or-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---- score box (game feedback) ---- */
+.score-box{border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px;background:var(--panel)}
+.score-row{display:grid;grid-template-columns:1fr 130px 34px;gap:10px;align-items:center;padding:6px 0}
+.score-row label{font-size:12.5px;color:var(--ink-soft)}
+.score-row label .algo-ref{font-family:"IBM Plex Mono";font-size:10px;color:var(--teal);margin-left:4px}
+.score-row .score-val{font-family:"IBM Plex Mono";font-size:12px;text-align:right;color:var(--ink)}
+.score-row input[type=range]{width:100%}
+@media(max-width:520px){.score-row{grid-template-columns:1fr 90px 30px}}
+#modalBody textarea{width:100%;font-family:"IBM Plex Sans";font-size:13px;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);resize:vertical}
+
+/* ---- feedback cards + chart ---- */
+.fb-card{border:1px solid var(--line-soft);border-radius:var(--radius);background:#fff;padding:14px;margin-bottom:14px}
+.fb-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.fb-head .b{font-family:"Space Grotesk";font-weight:600;font-size:15px}
+.fb-head .meta{font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint);margin-top:3px}
+.fb-actions{display:flex;gap:6px;align-items:center}
+.fb-body{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.fb-chart{flex:0 0 auto;text-align:center}
+.chart-legend{display:flex;gap:16px;justify-content:center;font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-soft);margin-top:4px}
+.chart-legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.chart-legend .sw.algo{background:var(--teal)}
+.chart-legend .sw.you{background:var(--signal)}
+.fb-notes{flex:1;min-width:220px;background:var(--panel);border-left:3px solid var(--signal);border-radius:var(--radius);padding:11px 13px;font-size:13px;line-height:1.5;color:var(--ink)}
+.fb-notes .lbl{display:block;font-family:"IBM Plex Mono";font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);margin-bottom:4px}

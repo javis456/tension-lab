@@ -15,6 +15,17 @@ router.get("/", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+router.get("/:id", async (req, res, next) => {
+  try {
+    const row = await one(
+      "SELECT id, name, config, scores, created_at FROM setups WHERE id=$1 AND user_id=$2",
+      [req.params.id, req.user.id]
+    );
+    if (!row) return res.status(404).json({ error: "Setup not found." });
+    res.json({ setup: row });
+  } catch (e) { next(e); }
+});
+
 router.post("/", async (req, res, next) => {
   try {
     const name = String(req.body.name || "").trim() || "Untitled setup";
