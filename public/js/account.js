@@ -28,12 +28,42 @@
     if (!email || !password) return showMsg("Enter your email and password.");
     const btn = $("authSubmit"); btn.disabled = true; const orig = btn.textContent; btn.textContent = "…";
     try {
-      if (tab === "register") await window.TLAuth.register(email, password);
-      else await window.TLAuth.login(email, password);
+      if (tab === "register") {
+        const d = await api("/api/auth/register", { method: "POST", body: JSON.stringify({ email, password }) });
+        if (d && d.pending) { showPending(email); return; }   // must confirm email first
+        window.TLAuth.user = d.user; // auto-verified path
+        if (nextUrl) { location.href = nextUrl; return; }
+        location.reload(); return;
+      }
+      await window.TLAuth.login(email, password);
       if (nextUrl) { location.href = nextUrl; return; }
       showView();
-    } catch (e) { showMsg(e.message || "Something went wrong."); }
+    } catch (e) {
+      if (e && /confirm your email/i.test(e.message || "")) return showNeedsVerify(email);
+      showMsg(e.message || "Something went wrong.");
+    }
     finally { btn.disabled = false; btn.textContent = orig; }
+  }
+
+  function showPending(addr) {
+    $("authView").innerHTML =
+      '<div class="page-head" style="text-align:center"><h1>Check your email 📬</h1>' +
+      '<p style="margin:0 auto">We sent a confirmation link to <b>' + esc(addr) + '</b>. Click it to activate your account, then come back and log in.</p></div>' +
+      '<div style="text-align:center;margin-top:16px"><button class="btn ghost sm" id="resendBtn">Resend the email</button></div>';
+    $("resendBtn").addEventListener("click", async () => {
+      try { await api("/api/auth/resend", { method: "POST", body: JSON.stringify({ email: addr }) }); toast("Sent again — check your inbox."); }
+      catch (e) { toast(e.message, true); }
+    });
+  }
+  function showNeedsVerify(addr) {
+    showMsg("Please confirm your email first — check your inbox. ", false);
+    const el = $("authMsg");
+    const b = document.createElement("button"); b.className = "btn link"; b.textContent = "Resend confirmation";
+    b.addEventListener("click", async () => {
+      try { await api("/api/auth/resend", { method: "POST", body: JSON.stringify({ email: addr }) }); toast("Sent again — check your inbox."); }
+      catch (e) { toast(e.message, true); }
+    });
+    el.appendChild(b);
   }
 
   /* ---------------- shared modal ---------------- */
@@ -232,5 +262,8 @@
   $("modalBack").addEventListener("click", (e) => { if (e.target.id === "modalBack") closeModal(); });
 
   setTab(tab);
+  const verify = params.get("verify");
+  if (verify === "ok") setTimeout(() => toast("Email confirmed — you're in! 🎾"), 400);
+  else if (verify === "invalid") setTimeout(() => toast("That confirmation link is invalid or expired.", true), 400);
   (window.TLAuth.ready || Promise.resolve()).then(showView);
 })();

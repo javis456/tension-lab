@@ -49,6 +49,7 @@ Requires Node 18+ and a PostgreSQL connection string in `DATABASE_URL`.
 | `DEEPSEEK_API_KEY` | Optional — DeepSeek (cheapest; answers from model knowledge) for AI Update |
 | `AI_MODEL` | Optional default model: `claude-haiku-4-5`, `deepseek-v4-flash`, or `deepseek-v4-pro` |
 | `GOOGLE_CLIENT_ID` | Optional — enables "Sign in with Google" (client ID only, safe to expose) |
+| `BREVO_API_KEY` + `MAIL_FROM` | Optional — turn on email confirmation for new sign-ups (Brevo) |
 | `PORT` | Local dev only |
 
 Without any AI key, AI Update returns a clearly-labelled offline estimate. Admins pick the model

@@ -26,11 +26,10 @@ everything — three quick steps:
    folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
 2. **Run the database updates.** In **Supabase → SQL Editor → New query**, run any migration
    files in the `supabase/` folder you haven't run yet — for this version that's
-   **`supabase/migration-v3.sql`** (it adds the Racket Room's user-rackets and game-feedback
-   tables). If you skipped an earlier update, run `migration-v2.sql` too. They're safe and won't
-   touch your data.
-3. **(Optional) Turn on extras:** DeepSeek as a cheaper AI (see *"Choosing your AI model"*) and
-   **Google sign-in** (see *"Adding Google sign-in"*).
+   **`supabase/migration-v4.sql`** (it adds the email-confirmation columns). If you skipped an
+   earlier update, run the lower-numbered ones too. They're safe and won't touch your data.
+3. **(Optional) Turn on extras:** DeepSeek (cheaper AI), **Google sign-in**, and
+   **email confirmation** for new sign-ups — all covered in their own sections below.
 
 That's it. Your accounts, saved combinations, rackets, and feedback are all preserved. The rest
 of this guide is the full first-time setup.
@@ -202,7 +201,54 @@ isn't set, the button simply doesn't appear — email/password still works.)
 
 ---
 
-## What's new in this version (Racket Room)
+## Turning on email confirmation (optional)
+
+Makes new users confirm a real email address before they can log in. Uses **Brevo** (free —
+300 emails/day, no credit card).
+
+1. Sign up at **https://www.brevo.com**.
+2. **Verify a sender address:** Brevo → **Senders, Domains & Dedicated IPs → Senders → Add a
+   sender**. Use an email you control (e.g. your Gmail). Brevo emails you a confirmation link —
+   click it. (This is the address your site's emails will come "from".)
+3. **Get an API key:** Brevo → **SMTP & API → API Keys → Generate a new API key**. Copy it.
+4. In **Vercel → Settings → Environment Variables**, add:
+   - `BREVO_API_KEY` = *the key you copied*
+   - `MAIL_FROM` = *the sender address you just verified*
+   - `MAIL_FROM_NAME` = `Tension Lab` (optional)
+5. **Deployments → ⋯ → Redeploy.**
+
+Now when someone registers, they get a "Confirm your email" message and can't log in until they
+click the link. (Google sign-ins are already verified, so they skip this.) **Until you set these,
+sign-ups just work immediately with no email step** — so the site is never broken by not having
+it. Existing accounts stay logged in; they're marked verified by the migration.
+
+> Note on the confirm link: the site builds it from the address people visit, so it works on
+> your Vercel URL automatically. If you use a custom domain and links look wrong, set
+> `PUBLIC_URL=https://your-domain` in Vercel.
+
+---
+
+## Bulk-adding strings and rackets (CSV)
+
+In the admin portal, next to "Add manually" there's now **⇪ Bulk upload (CSV)** — for loading
+many products at once.
+
+1. Pick the tab (**Strings** or **Rackets**), click **Bulk upload**, then **⬇ Download template**.
+   The template has the exact column headers plus one example row.
+2. Fill it in (Excel, Google Sheets, Numbers — anything that saves `.csv`). Only **brand** and
+   **name** are required; leave others blank to use sensible defaults.
+3. Upload the file. You'll see a **preview**: which columns were matched, and a per-row
+   ok/skip status with any warnings — *nothing is saved yet*.
+4. Click **Import N rows**.
+
+Why it won't scramble your data: columns are matched **by their header name, not their position**,
+so you can reorder columns or add extra ones and it still lands each value in the right field.
+Rows missing brand/name are skipped (and listed), and values like material or ratings are
+validated — an unrecognized material is flagged and defaulted rather than silently placed wrong.
+For the string ratings, the columns are `pw co sp cf fe du tm` (power, control, spin, comfort,
+feel, durability, tension), each 0–100; gauges go in one cell like `1.30|1.25`.
+
+---
 
 - **🎾 Racket Room** — the logged-in home, reachable from the top bar, with three tabs:
   - **My Racket** — add the frames you own; they appear first in Setup String's picker.

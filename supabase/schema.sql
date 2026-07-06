@@ -307,3 +307,8 @@ CREATE TABLE IF NOT EXISTS feedback (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_feedback_user ON feedback(user_id);
+
+-- ---- v4: email confirmation ----
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verify_token TEXT;
+CREATE INDEX IF NOT EXISTS idx_users_verify_token ON users(verify_token);

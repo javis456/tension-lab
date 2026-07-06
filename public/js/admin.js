@@ -163,8 +163,8 @@
     $("modalTitle").textContent = title;
     $("modalBody").innerHTML = bodyHtml;
     $("modalBack").classList.remove("hide");
-    $("mCancel").addEventListener("click", closeModal);
-    $("mSave").addEventListener("click", save);
+    const c = $("mCancel"); if (c) c.addEventListener("click", closeModal);
+    const s = $("mSave"); if (s) s.addEventListener("click", save);
   }
   function closeModal() { $("modalBack").classList.add("hide"); editingId = null; }
 
@@ -248,9 +248,86 @@
     }
   }
 
+  /* ---------------- bulk upload (CSV) ---------------- */
+  const bulkType = () => (tab === "rackets" ? "racket" : "string");
+  const STRING_COLS = ["brand", "name", "material", "geo", "gauges", "tier", "price_usd", "known_for", "claim", "pw", "co", "sp", "cf", "fe", "du", "tm"];
+  const RACKET_COLS = ["brand", "name", "ver", "year", "mains", "crosses", "head_size", "ra", "weight", "char", "known_for"];
+  const STRING_EX = ["Luxilon", "ALU Power", "poly", "round", "1.30|1.25", "$$$", "18", "Tour control benchmark", "", "52", "88", "74", "40", "66", "84", "58"];
+  const RACKET_EX = ["Wilson", "Pro Staff 97", "v14", "2023", "16", "19", "97", "66", "315", "control feel", "Classic control frame"];
+
+  function csvCell(v) { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function downloadTemplate() {
+    const isStr = bulkType() === "string";
+    const cols = isStr ? STRING_COLS : RACKET_COLS, ex = isStr ? STRING_EX : RACKET_EX;
+    const csv = cols.join(",") + "\n" + ex.map(csvCell).join(",") + "\n";
+    const blob = new Blob([csv], { type: "text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "tension-lab-" + (isStr ? "strings" : "rackets") + "-template.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  let bulkCsv = "";
+  function bulkModal() {
+    const isStr = bulkType() === "string";
+    const cols = (isStr ? STRING_COLS : RACKET_COLS).join(", ");
+    openModal("Bulk upload " + (isStr ? "strings" : "rackets"),
+      '<p class="sub" style="font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin:0 0 12px">' +
+        'Upload a <b>.csv</b> file. Columns are matched by their <b>header name</b> (order doesn\u2019t matter, extra columns are ignored), so nothing gets mixed up. ' +
+        'Required: <b>brand</b> and <b>name</b>. Recognized columns: <span style="font-family:IBM Plex Mono;font-size:11px">' + esc(cols) + "</span></p>" +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">' +
+        '<button class="btn ghost sm" id="tplBtn">⬇ Download template</button>' +
+        '<input type="file" id="bulkFile" accept=".csv,text/csv" style="font-size:12.5px">' +
+      "</div>" +
+      '<div id="bulkPreview"></div>' +
+      '<div id="bulkActions" style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">' +
+        '<button class="btn ghost" id="mCancel">Close</button></div>');
+    $("tplBtn").addEventListener("click", downloadTemplate);
+    $("mCancel").addEventListener("click", closeModal);
+    $("bulkFile").addEventListener("change", async (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      bulkCsv = await file.text();
+      await runPreview();
+    });
+  }
+
+  async function runPreview() {
+    const box = $("bulkPreview");
+    box.innerHTML = '<div class="empty-note" style="border:0">Reading…</div>';
+    let d;
+    try { d = await api("/api/admin/bulk/preview", { method: "POST", body: JSON.stringify({ type: bulkType(), csv: bulkCsv }) }); }
+    catch (e) { box.innerHTML = '<div class="form-msg err">' + esc(e.message) + "</div>"; return; }
+    const mapping = Object.entries(d.mapping).map(([k, h]) => k + " ← “" + esc(h) + "”").join(" · ");
+    const rowsHtml = d.rows.map((r) => {
+      const status = r.ok ? '<span class="badge live">ok</span>' : '<span class="badge est">skip</span>';
+      const detail = r.ok ? esc((r.data.brand || "") + " · " + (r.data.name || "")) : esc(r.errors.join(", "));
+      const warn = r.warnings && r.warnings.length ? '<div class="bulk-warn">' + esc(r.warnings.join("; ")) + "</div>" : "";
+      return '<tr><td class="num">' + r.line + "</td><td>" + status + "</td><td>" + detail + warn + "</td></tr>";
+    }).join("");
+    box.innerHTML =
+      '<div class="bulk-map"><b>Column mapping:</b> ' + (mapping || "—") + "</div>" +
+      '<div class="bulk-sum">' + d.valid + " of " + d.total + " rows ready to import" + (d.total > d.rows.length ? " (showing first " + d.rows.length + ")" : "") + "</div>" +
+      '<div class="table-scroll" style="max-height:280px;overflow:auto"><table class="cmp" style="min-width:0"><thead><tr><th class="num">Line</th><th>Status</th><th>Result</th></tr></thead><tbody>' + rowsHtml + "</tbody></table></div>";
+    const acts = $("bulkActions");
+    acts.innerHTML = '<button class="btn ghost" id="mCancel">Close</button>' +
+      (d.valid > 0 ? '<button class="btn sig" id="bulkCommit">Import ' + d.valid + " rows</button>" : "");
+    $("mCancel").addEventListener("click", closeModal);
+    if (d.valid > 0) $("bulkCommit").addEventListener("click", runCommit);
+  }
+
+  async function runCommit() {
+    const btn = $("bulkCommit"); btn.disabled = true; btn.textContent = "Importing…";
+    try {
+      const d = await api("/api/admin/bulk/commit", { method: "POST", body: JSON.stringify({ type: bulkType(), csv: bulkCsv }) });
+      toast("Imported " + d.inserted + " " + (bulkType() === "string" ? "strings" : "rackets") +
+        (d.skipped ? " (" + d.skipped + " skipped)" : ""));
+      closeModal(); loadList();
+    } catch (e) { toast(e.message, true); btn.disabled = false; btn.textContent = "Import"; }
+  }
+
   function initAdmin() {
     $("adminView").classList.remove("hide");
     loadAiModels();
+    $("bulkBtn").addEventListener("click", bulkModal);
     document.querySelectorAll("#adminTabs button").forEach((b) =>
       b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
     $("addBtn").addEventListener("click", openAdd);

@@ -3,9 +3,106 @@ const { one, query, mapString, mapRacket } = require("../db");
 const { requireAdmin } = require("../middleware/auth");
 const ai = require("../ai");
 const { normalizeString, normalizeRacket } = ai;
+const { parseToRecords } = require("../csv");
+const { MATERIALS, GEOMETRIES } = require("../rubric");
 
 const router = express.Router();
 router.use(requireAdmin);
+
+/* ---- bulk upload: header-name column mapping (never positional) ---- */
+const STRING_ALIASES = {
+  brand: ["brand"], name: ["name", "string", "product", "model"],
+  material: ["material", "type"], geo: ["geo", "geometry", "shape"],
+  gauges: ["gauges", "gauge", "gaugesmm", "diameter", "diameters"],
+  tier: ["tier", "pricetier"], price_usd: ["price", "priceusd", "cost", "usd", "priceusd$"],
+  known_for: ["knownfor", "summary", "description", "desc"], claim: ["claim", "manufacturerclaim", "marketing"],
+  pw: ["pw", "power"], co: ["co", "control"], sp: ["sp", "spin"], cf: ["cf", "comfort"],
+  fe: ["fe", "feel"], du: ["du", "durability"], tm: ["tm", "tension", "tensionmaintenance", "tensionhold"],
+};
+const STRING_REQUIRED = ["brand", "name"];
+const RACKET_ALIASES = {
+  brand: ["brand"], name: ["name", "model", "product"], ver: ["ver", "version"], year: ["year"],
+  mains: ["mains", "mainpattern", "mainscount"], crosses: ["crosses", "crosspattern", "crossescount"],
+  head_size: ["headsize", "head"], ra: ["ra", "stiffness", "stiffnessra"],
+  weight: ["weight", "weightg", "mass"], char: ["char", "character", "style"],
+  known_for: ["knownfor", "summary", "description", "desc"],
+};
+const RACKET_REQUIRED = ["brand", "name"];
+
+function recordToString(rec) {
+  const gm = String(rec.gauges || "").match(/[\d.]+/g);
+  const gauges = (gm || []).map(Number).filter((x) => x > 0.6 && x < 2);
+  const ratings = {};
+  ["pw", "co", "sp", "cf", "fe", "du", "tm"].forEach((k) => { if (rec[k] != null && rec[k] !== "") ratings[k] = Number(rec[k]); });
+  return {
+    brand: rec.brand, name: rec.name,
+    material: rec.material ? String(rec.material).trim().toLowerCase() : undefined,
+    geo: rec.geo ? String(rec.geo).trim().toLowerCase() : undefined,
+    gauges, tier: rec.tier, price_usd: rec.price_usd, known_for: rec.known_for, claim: rec.claim, ratings,
+  };
+}
+const recordToRacket = (rec) => ({
+  brand: rec.brand, name: rec.name, ver: rec.ver, year: rec.year, mains: rec.mains, crosses: rec.crosses,
+  head_size: rec.head_size, ra: rec.ra, weight: rec.weight, char: rec.char, known_for: rec.known_for,
+});
+
+function bulkParse(type, csv) {
+  const isStr = type !== "racket";
+  const parsed = parseToRecords(csv, isStr ? STRING_ALIASES : RACKET_ALIASES, isStr ? STRING_REQUIRED : RACKET_REQUIRED);
+  return Object.assign({ isStr }, parsed);
+}
+function validateRow(isStr, rec) {
+  const raw = isStr ? recordToString(rec) : recordToRacket(rec);
+  const data = isStr ? normalizeString(raw) : normalizeRacket(raw);
+  const errors = [], warnings = [];
+  if (!data.brand) errors.push("missing brand");
+  if (!data.name) errors.push("missing name");
+  if (isStr) {
+    if (rec.material && !MATERIALS.includes(String(rec.material).trim().toLowerCase())) warnings.push(`material “${rec.material}” → ${data.material}`);
+    if (rec.geo && !GEOMETRIES.includes(String(rec.geo).trim().toLowerCase())) warnings.push(`geo “${rec.geo}” → ${data.geo}`);
+    if (rec.gauges && !raw.gauges.length) warnings.push("gauges unreadable → default");
+  }
+  return { line: rec.__line, ok: errors.length === 0, errors, warnings, data };
+}
+
+router.post("/bulk/preview", (req, res) => {
+  try {
+    const type = req.body.type === "racket" ? "racket" : "string";
+    const { isStr, headerMap, headers, records, missingRequired } = bulkParse(type, String(req.body.csv || ""));
+    if (missingRequired.length) return res.status(400).json({ error: "Your header row must include: " + missingRequired.join(", ") + ". Use the template so columns are named correctly." });
+    const rows = records.map((r) => validateRow(isStr, r));
+    const mapping = {};
+    for (const k in headerMap) mapping[k] = headerMap[k].header;
+    res.json({ type, mapping, total: rows.length, valid: rows.filter((r) => r.ok).length, rows: rows.slice(0, 1000) });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+router.post("/bulk/commit", async (req, res) => {
+  try {
+    const type = req.body.type === "racket" ? "racket" : "string";
+    const { isStr, records, missingRequired } = bulkParse(type, String(req.body.csv || ""));
+    if (missingRequired.length) return res.status(400).json({ error: "Missing required column(s): " + missingRequired.join(", ") });
+    let inserted = 0; const errors = [];
+    for (const rec of records) {
+      const v = validateRow(isStr, rec);
+      if (!v.ok) { errors.push({ line: v.line, error: v.errors.join(", ") }); continue; }
+      const s = v.data;
+      try {
+        if (isStr) {
+          await query(`INSERT INTO strings (brand,name,material,geo,gauges,tier,known_for,claim,ratings,price_usd)
+            VALUES ($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9::jsonb,$10)`,
+            [s.brand, s.name, s.material, s.geo, JSON.stringify(s.gauges), s.tier, s.known_for, s.claim, JSON.stringify(s.ratings), s.price_usd]);
+        } else {
+          await query(`INSERT INTO rackets (brand,name,ver,year,mains,crosses,head_size,ra,weight,char_label,known_for)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+            [s.brand, s.name, s.ver, s.year, s.mains, s.crosses, s.head_size, s.ra, s.weight, s.char, s.known_for]);
+        }
+        inserted++;
+      } catch (e) { errors.push({ line: v.line, error: e.message }); }
+    }
+    res.json({ inserted, skipped: records.length - inserted, errors });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
 
 const wrap = (fn) => (req, res) => Promise.resolve(fn(req, res)).catch((e) =>
   res.status(500).json({ error: e.message || "Server error." }));

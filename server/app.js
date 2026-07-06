@@ -15,9 +15,12 @@ app.get("/api/health", (req, res) =>
     ai: { anthropic: !!process.env.ANTHROPIC_API_KEY, deepseek: !!process.env.DEEPSEEK_API_KEY },
   }));
 
-// public front-end config (safe to expose): Google client id if configured
+// public front-end config (safe to expose)
 app.get("/api/config", (req, res) =>
-  res.json({ googleClientId: process.env.GOOGLE_CLIENT_ID || null }));
+  res.json({
+    googleClientId: process.env.GOOGLE_CLIENT_ID || null,
+    emailVerification: require("./email").enabled(),
+  }));
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api", require("./routes/data"));
