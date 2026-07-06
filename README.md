@@ -1,12 +1,15 @@
 # Tension Lab — by Mensin Tennis (Supabase + Vercel edition)
 
 A full-stack tennis string configurator: design a setup and get a physics-based read-out
-(**Setup String**), compare every string side by side (**String Comparison**), save setups to
-a free account, and manage the catalog from an **admin portal** with an **AI Update** button
-that ingests new products from the web.
+(**Setup String**), compare every string side by side (**String Comparison**), save setups,
+rackets, and strings to a free account (**My Tension Lab** tabs), and manage the catalog from an
+**admin portal** with an **AI Update** button (Anthropic or DeepSeek) that ingests new products.
+A small **visitor counter** sits in the footer.
 
 This edition runs on the free **GitHub → Supabase → Vercel** stack.
 **To put it online, follow [DEPLOY.md](./DEPLOY.md)** — a click-by-click, no-coding guide.
+Already deployed an earlier version? DEPLOY.md's top section covers the update (upload the code,
+run `supabase/migration-v2.sql`).
 
 ## How it's wired
 
@@ -42,9 +45,13 @@ Requires Node 18+ and a PostgreSQL connection string in `DATABASE_URL`.
 |---|---|
 | `DATABASE_URL` | Supabase Postgres connection string (**transaction pooler**, port 6543) |
 | `AUTH_SECRET` | Long random string that signs login cookies |
-| `ANTHROPIC_API_KEY` | Optional — enables real (web-sourced) AI Update; without it you get an offline estimate |
-| `AI_MODEL` | Optional — defaults to `claude-haiku-4-5` |
+| `ANTHROPIC_API_KEY` | Optional — Claude with **live web search** for AI Update |
+| `DEEPSEEK_API_KEY` | Optional — DeepSeek (cheapest; answers from model knowledge) for AI Update |
+| `AI_MODEL` | Optional default model: `claude-haiku-4-5`, `deepseek-v4-flash`, or `deepseek-v4-pro` |
 | `PORT` | Local dev only |
+
+Without any AI key, AI Update returns a clearly-labelled offline estimate. Admins pick the model
+per-lookup from a dropdown; models without a key are shown as "(needs API key)".
 
 ## Admin
 

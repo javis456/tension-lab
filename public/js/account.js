@@ -90,13 +90,68 @@
     }
   }
 
+  const matLabel = window.TL.matLabel, matHex = window.TL.matHex, priceStr = window.TL.priceStr;
+
+  function racketCard(r) {
+    return '<div class="item-card">' +
+      "<div><div class=\"b\">" + esc(r.brand) + " " + esc(r.name) +
+        (r.ver ? ' <span style="color:var(--ink-faint);font-weight:400">' + esc(r.ver) + "</span>" : "") + "</div>" +
+        '<div class="meta">' + esc(r.mains) + "\u00d7" + esc(r.crosses) + " \u00b7 " + esc(r.head_size) +
+          " in\u00b2 \u00b7 RA " + esc(r.ra) + (r.year ? " \u00b7 " + esc(r.year) : "") + "</div></div>" +
+      '<div class="actions">' +
+        '<a class="btn ghost sm" href="/?racket=' + r.id + '">Use in Setup</a>' +
+        '<button class="btn link del-fav" data-kind="racket" data-id="' + r.id + '">Remove</button>' +
+      "</div></div>";
+  }
+  function stringCard(s) {
+    return '<div class="item-card">' +
+      "<div><div class=\"b\">" + esc(s.brand) + " " + esc(s.name) + "</div>" +
+        '<div class="meta"><span class="matpill" style="background:' + matHex(s.material) + '">' + esc(matLabel(s.material)) +
+          "</span> \u00b7 " + priceStr(s.price_usd) + " \u00b7 " + esc(s.tier || "") + "</div></div>" +
+      '<div class="actions">' +
+        '<a class="btn ghost sm" href="/?main=' + s.id + '">Use in Setup</a>' +
+        '<button class="btn link del-fav" data-kind="string" data-id="' + s.id + '">Remove</button>' +
+      "</div></div>";
+  }
+
+  async function loadFavorites() {
+    try {
+      const d = await api("/api/favorites");
+      $("racketsList").innerHTML = d.rackets.length
+        ? d.rackets.map(racketCard).join("")
+        : '<div class="empty-note">No saved rackets yet. In <a href="/">Setup String</a>, pick a racket and tap the \u2661 to save it.</div>';
+      $("stringsList").innerHTML = d.strings.length
+        ? d.strings.map(stringCard).join("")
+        : '<div class="empty-note">No saved strings yet. On <a href="/compare.html">String Comparison</a>, tap the \u2661 next to any string.</div>';
+      document.querySelectorAll(".del-fav").forEach((b) =>
+        b.addEventListener("click", async () => {
+          try {
+            await api("/api/favorites/" + b.getAttribute("data-kind") + "/" + b.getAttribute("data-id"), { method: "DELETE" });
+            toast("Removed"); loadFavorites();
+          } catch (e) { toast(e.message, true); }
+        }));
+    } catch (e) {
+      $("racketsList").innerHTML = '<div class="empty-note">Could not load favorites.</div>';
+    }
+  }
+
+  function acctTab(t) {
+    document.querySelectorAll("#acctTabs button").forEach((b) =>
+      b.classList.toggle("on", b.getAttribute("data-tab") === t));
+    $("tab-setups").classList.toggle("hide", t !== "setups");
+    $("tab-rackets").classList.toggle("hide", t !== "rackets");
+    $("tab-strings").classList.toggle("hide", t !== "strings");
+  }
+
   function showView() {
     const u = window.TLAuth.user;
     $("authView").classList.toggle("hide", !!u);
     $("setupsView").classList.toggle("hide", !u);
-    if (u) loadSetups();
+    if (u) { loadSetups(); loadFavorites(); }
   }
 
+  document.querySelectorAll("#acctTabs button").forEach((b) =>
+    b.addEventListener("click", () => acctTab(b.getAttribute("data-tab"))));
   document.querySelectorAll("#authTabs button").forEach((b) =>
     b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
   $("authSubmit").addEventListener("click", submit);

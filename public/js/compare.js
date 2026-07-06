@@ -7,6 +7,7 @@
 
   let ROWS = [];         // full dataset
   let AXES = [];         // [{k,nm}]
+  let favStrings = new Set(); // ids the user has saved
   let matFilter = "all";
   let query = "";
   let sortKey = "brand"; // brand|name|material|price|tier|<axis k>
@@ -54,7 +55,8 @@
   }
 
   function renderHead() {
-    let h = headCell("brand", "Brand") + headCell("name", "String") +
+    let h = '<th class="fav-col" title="Save to My Strings">\u2661</th>' +
+      headCell("brand", "Brand") + headCell("name", "String") +
       headCell("material", "Material") + headCell("price", "Price", true) +
       headCell("tier", "Tier", true);
     AXES.forEach((a) => (h += headCell(a.k, a.nm, true)));
@@ -79,7 +81,10 @@
     let prevBrand = null, html = "";
     for (const r of rows) {
       const first = r.brand !== prevBrand; prevBrand = r.brand;
+      const on = favStrings.has(r.id) ? " on" : "";
       html += '<tr class="' + (first ? "grp-first" : "") + '">' +
+        '<td class="fav-col"><button class="fav-btn' + on + '" data-fav="' + r.id + '" title="Save to My Strings">' +
+          (favStrings.has(r.id) ? "\u2665" : "\u2661") + "</button></td>" +
         '<td class="brand">' + esc(r.brand) + "</td>" +
         '<td class="name">' + esc(r.name) + "</td>" +
         '<td><span class="matpill" style="background:' + matHex(r.material) + '">' + esc(matLabel(r.material)) + "</span></td>" +
@@ -89,9 +94,21 @@
       html += "</tr>";
     }
     document.getElementById("cmpBody").innerHTML =
-      html || '<tr><td colspan="12" class="empty-note" style="border:0">No strings match.</td></tr>';
+      html || '<tr><td colspan="13" class="empty-note" style="border:0">No strings match.</td></tr>';
     document.getElementById("cmpCount").textContent =
       rows.length + " of " + ROWS.length + " strings";
+    wireHearts();
+  }
+
+  function wireHearts() {
+    document.querySelectorAll("#cmpBody .fav-btn").forEach((b) =>
+      b.addEventListener("click", async () => {
+        const id = Number(b.getAttribute("data-fav"));
+        const now = await window.TLFav.toggle("string", id, "/compare.html");
+        if (now === null) return; // guest -> redirected to login
+        if (now) { favStrings.add(id); b.classList.add("on"); b.textContent = "\u2665"; window.TL.toast("Saved to My Strings"); }
+        else { favStrings.delete(id); b.classList.remove("on"); b.textContent = "\u2661"; window.TL.toast("Removed"); }
+      }));
   }
 
   function renderChips() {
@@ -112,6 +129,11 @@
         '<tr><td class="empty-note" style="border:0">Could not load strings. Is the server running?</td></tr>';
       return;
     }
+    try {
+      await (window.TLAuth.ready || Promise.resolve());
+      const ids = await window.TLFav.ids();
+      favStrings = new Set(ids.strings);
+    } catch (_) {}
     renderChips();
     render();
     document.getElementById("cmpSearch").addEventListener("input", (e) => {

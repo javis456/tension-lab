@@ -53,14 +53,30 @@
     </div>
   </div>
 
-  <!-- LOGGED-IN: saved setups -->
+  <!-- LOGGED-IN: my stuff -->
   <div id="setupsView" class="hide">
     <div class="page-head">
-      <h1>Saved setups</h1>
-      <p>Your saved string configurations. Open one in Setup String, or remove any you no longer need.</p>
+      <h1>My Tension Lab</h1>
+      <p>Everything you've saved. <b>Setups</b> are full string configurations; <b>rackets</b> and <b>strings</b> are quick favorites you can jump back to any time.</p>
     </div>
-    <div id="setupsList"></div>
-    <div style="margin-top:16px"><a class="btn ghost" href="/">＋ Build a new setup</a></div>
+    <div class="admin-tabs" id="acctTabs">
+      <button data-tab="setups" class="on">My Setups</button>
+      <button data-tab="rackets">My Rackets</button>
+      <button data-tab="strings">My Strings</button>
+    </div>
+
+    <div id="tab-setups">
+      <div id="setupsList"></div>
+      <div style="margin-top:16px"><a class="btn ghost" href="/">＋ Build a new setup</a></div>
+    </div>
+    <div id="tab-rackets" class="hide">
+      <div id="racketsList"></div>
+      <div style="margin-top:16px"><a class="btn ghost" href="/">Pick &amp; save a racket in Setup String →</a></div>
+    </div>
+    <div id="tab-strings" class="hide">
+      <div id="stringsList"></div>
+      <div style="margin-top:16px"><a class="btn ghost" href="/compare.html">Save strings from String Comparison →</a></div>
+    </div>
   </div>
 
 </div>

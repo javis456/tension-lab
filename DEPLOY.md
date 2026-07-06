@@ -17,6 +17,23 @@ inside — that's on purpose; you don't upload it.)
 
 ---
 
+## ⚡ Already deployed an earlier version? Do this instead
+
+If your site is already live and you're just applying this update, you don't need to redo
+everything — three quick steps:
+
+1. **Update the code.** In your GitHub repo, upload the new files (drag the contents of this
+   folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
+2. **Run the database update.** In **Supabase → SQL Editor → New query**, paste the contents of
+   **`supabase/migration-v2.sql`** and click **Run**. This adds the new "favorites" and
+   visitor-counter tables without touching your existing data.
+3. **(Optional) Add DeepSeek** as a cheaper AI option — see *"Choosing your AI model"* below.
+
+That's it. Your accounts, saved setups, and catalog are all preserved. The rest of this guide
+is the full first-time setup.
+
+---
+
 ## Part 1 — Put the code on GitHub
 
 **A.** Go to https://github.com and log in. Click the **+** (top right) → **New repository**.
@@ -121,20 +138,38 @@ Done — the site is fully live and yours.
 
 ---
 
-## Optional — turn on the real "AI Update"
+## Choosing your AI model (Anthropic and/or DeepSeek)
 
-Out of the box, AI Update works but returns a rough **offline estimate**. To have it fetch real
-specs from the web:
+The **AI Update** button in the admin portal can use two different AI providers. You can set up
+either one, both, or neither:
 
-1. Get a key at https://console.anthropic.com (Billing → add a small amount; lookups cost a
-   fraction of a cent each).
-2. In **Vercel** → your project → **Settings → Environment Variables**, add:
-   - `ANTHROPIC_API_KEY` = *your key*
-   - `AI_MODEL` = `claude-haiku-4-5`
-3. Go to **Deployments**, click the latest one's **⋯ menu → Redeploy** so the new setting
-   takes effect.
+| Provider | Env variable | Strength | Rough cost |
+|---|---|---|---|
+| **Anthropic (Claude Haiku)** | `ANTHROPIC_API_KEY` | Searches the **live web** — best for brand-new products | a fraction of a cent per lookup |
+| **DeepSeek** | `DEEPSEEK_API_KEY` | **Cheapest**; answers from its own knowledge (no live web) | ~10–30× cheaper again |
 
-Now AI Update pulls live web-sourced data into the preview.
+With **no key**, AI Update still works and returns a clearly-labelled *offline estimate* you can
+edit and save — so you can use the site fully for free.
+
+**To add a key (either or both):**
+
+1. Get a key:
+   - Anthropic → https://console.anthropic.com (Billing → add a little credit)
+   - DeepSeek → https://platform.deepseek.com (create an API key, top up a small amount)
+2. In **Vercel** → your project → **Settings → Environment Variables**, add whichever you want:
+   - `ANTHROPIC_API_KEY` = *your Anthropic key*
+   - `DEEPSEEK_API_KEY` = *your DeepSeek key*
+   - *(optional)* `AI_MODEL` = the default model, one of `claude-haiku-4-5`,
+     `deepseek-v4-flash`, or `deepseek-v4-pro`
+3. **Deployments → ⋯ → Redeploy** so the keys take effect.
+
+**Picking a model when you use it:** in the admin portal's AI Update box there's now a **model
+dropdown**. Every visit you can choose Claude, DeepSeek Flash (cheapest), or DeepSeek Pro
+(higher quality) — models without a configured key are marked "(needs API key)". The offline
+estimate is always available as a fallback.
+
+> Tip: DeepSeek is wonderfully cheap and great for well-known products. For a string or racket
+> released very recently, Claude's live web search will usually get the specs more accurately.
 
 ---
 

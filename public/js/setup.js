@@ -483,6 +483,8 @@ function update(){
 
   // slider fills
   setSliderFill($("tenMain")); setSliderFill($("tenCross"));
+
+  if (typeof refreshFavChips === "function") refreshFavChips();
 }
 function setSliderFill(el){
   const pct=((el.value-el.min)/(el.max-el.min))*100;
@@ -712,6 +714,46 @@ async function boot(){
   wire();
   setMode("goal");
   wireSaveSetup();
+  wireSaveFavorites();
+  applyQueryPreselect();
+  (window.TLAuth && window.TLAuth.ready || Promise.resolve()).then(refreshFavChips);
+}
+
+/* ---- favorites: save the current racket / main string ---- */
+function currentRacket(){ return state.mode==="goal" ? RACKETS[state.goalRacketIdx] : RACKETS[state.racketIdx]; }
+async function refreshFavChips(){
+  const rb=document.getElementById('saveRacketBtn'), sb=document.getElementById('saveStringBtn');
+  if(!rb||!sb||!window.TLFav) return;
+  const loggedIn = window.TLAuth && window.TLAuth.user;
+  const ids = loggedIn ? await window.TLFav.ids() : {rackets:[],strings:[]};
+  const rk=currentRacket(), sMain=strById(state.mainId);
+  const rOn = rk && rk._id!=null && ids.rackets.includes(rk._id);
+  const sOn = sMain && sMain._id!=null && ids.strings.includes(sMain._id);
+  rb.classList.toggle('on', !!rOn); sb.classList.toggle('on', !!sOn);
+  rb.querySelector('.h').innerHTML = rOn ? '&#9829;' : '&#9825;';
+  sb.querySelector('.h').innerHTML = sOn ? '&#9829;' : '&#9825;';
+}
+function wireSaveFavorites(){
+  const rb=document.getElementById('saveRacketBtn'), sb=document.getElementById('saveStringBtn');
+  if(rb) rb.addEventListener('click', async ()=>{
+    const rk=currentRacket(); if(!rk||rk._id==null){ window.TL.toast('Pick a specific racket first',true); return; }
+    const now=await window.TLFav.toggle('racket', rk._id, '/'); if(now===null) return;
+    window.TL.toast(now?'Saved to My Rackets':'Removed'); refreshFavChips();
+  });
+  if(sb) sb.addEventListener('click', async ()=>{
+    const sMain=strById(state.mainId); if(!sMain||sMain._id==null) return;
+    const now=await window.TLFav.toggle('string', sMain._id, '/'); if(now===null) return;
+    window.TL.toast(now?'Saved to My Strings':'Removed'); refreshFavChips();
+  });
+}
+function applyQueryPreselect(){
+  const p=new URLSearchParams(location.search);
+  const rid=p.get('racket'), mid=p.get('main');
+  if(!rid && !mid) return;
+  setMode('scratch');
+  if(rid){ const i=RACKETS.findIndex(r=>String(r._id)===String(rid)); if(i>=0) state.racketIdx=i; }
+  if(mid){ const i=STRINGS.findIndex(s=>String(s._id)===String(mid)); if(i>=0){ state.mainId=i; state.mainG=STRINGS[i].g[0]; } }
+  syncRacketLabels(); renderRacketSpec(); syncStringSelectors(); update();
 }
 
 /* ---- save the current setup (requires login) ---- */

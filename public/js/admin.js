@@ -207,12 +207,13 @@
     const type = $("aiType").value; // string | racket
     const brand = $("aiBrand").value.trim();
     const name = $("aiName").value.trim();
+    const model = $("aiModel") ? $("aiModel").value : "";
     const st = $("aiStatus");
     if (!brand || !name) { st.className = "ai-status err"; st.textContent = "Enter a brand and product name."; return; }
     const btn = $("aiBtn"); btn.disabled = true;
-    st.className = "ai-status busy"; st.textContent = "Searching the web and building a profile… (a few seconds)";
+    st.className = "ai-status busy"; st.textContent = "Building a profile… (a few seconds)";
     try {
-      const d = await api("/api/admin/ai-lookup", { method: "POST", body: JSON.stringify({ type, brand, name }) });
+      const d = await api("/api/admin/ai-lookup", { method: "POST", body: JSON.stringify({ type, brand, name, model }) });
       const live = d.source === "ai";
       st.className = "ai-status";
       st.innerHTML = (live
@@ -234,8 +235,22 @@
     if (!skipLoad) loadList();
   }
 
+  async function loadAiModels() {
+    const sel = $("aiModel");
+    if (!sel) return;
+    try {
+      const d = await api("/api/admin/ai-models");
+      sel.innerHTML = d.models.map((m) =>
+        '<option value="' + m.id + '"' + (m.id === d.default ? " selected" : "") + (m.ready ? "" : " ") + ">" +
+        esc(m.label) + (m.ready || m.id === "offline" ? "" : "  (needs API key)") + "</option>").join("");
+    } catch (_) {
+      sel.innerHTML = '<option value="offline">Offline estimate · no API</option>';
+    }
+  }
+
   function initAdmin() {
     $("adminView").classList.remove("hide");
+    loadAiModels();
     document.querySelectorAll("#adminTabs button").forEach((b) =>
       b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
     $("addBtn").addEventListener("click", openAdd);

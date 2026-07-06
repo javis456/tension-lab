@@ -40,4 +40,19 @@ router.get("/compare", wrap(async (req, res) => {
   res.json({ strings: rows, axes: engine.ATTRS });
 }));
 
+/* ---- site visitor counter (public) ---- */
+// GET current count
+router.get("/stats", wrap(async (req, res) => {
+  const row = await one("SELECT value FROM site_stats WHERE key='visits'");
+  res.json({ visits: row ? Number(row.value) : 0 });
+}));
+// POST a visit -> increments once and returns the new count.
+// The frontend only calls this once per browser session (cookie-gated).
+router.post("/visit", wrap(async (req, res) => {
+  const row = await one(
+    "UPDATE site_stats SET value = value + 1 WHERE key='visits' RETURNING value"
+  );
+  res.json({ visits: row ? Number(row.value) : 0 });
+}));
+
 module.exports = router;

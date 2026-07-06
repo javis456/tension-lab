@@ -10,13 +10,17 @@ router.use(requireAdmin);
 const wrap = (fn) => (req, res) => Promise.resolve(fn(req, res)).catch((e) =>
   res.status(500).json({ error: e.message || "Server error." }));
 
+/* ---- which AI models are available (for the admin dropdown) ---- */
+router.get("/ai-models", (req, res) => res.json(ai.availableModels()));
+
 /* ---- AI lookup (preview only; does not write) ---- */
 router.post("/ai-lookup", async (req, res) => {
   try {
     const type = req.body.type === "racket" ? "racket" : "string";
     const brand = String(req.body.brand || "").trim();
     const name = String(req.body.name || "").trim();
-    const result = await ai.lookup(type, brand, name);
+    const model = String(req.body.model || "").trim();
+    const result = await ai.lookup(type, brand, name, model);
     res.json({ type, ...result });
   } catch (e) {
     res.status(502).json({ error: e.message || "AI lookup failed." });

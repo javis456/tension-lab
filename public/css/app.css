@@ -379,3 +379,26 @@ table.cmp td.num{text-align:right;font-family:"IBM Plex Mono";font-variant-numer
 
 .note-strip{font-size:11.5px;color:var(--ink-faint);line-height:1.5;border:1px solid var(--line-soft);border-left:3px solid var(--teal);border-radius:var(--radius);padding:11px 13px;background:var(--panel);margin-bottom:18px}
 .note-strip b{color:var(--ink-soft)}
+
+/* ---- visitor counter (footer) ---- */
+.foot-in .visits{font-family:"IBM Plex Mono";font-size:11.5px;color:var(--ink-faint);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.foot-in .visits .eye{opacity:.7}
+
+/* ---- favorite hearts ---- */
+.fav-btn{background:none;border:0;cursor:pointer;font-size:15px;line-height:1;color:var(--ink-faint);padding:3px 5px;border-radius:6px;transition:color .12s,transform .12s}
+.fav-btn:hover{color:var(--signal);transform:scale(1.12)}
+.fav-btn.on{color:var(--signal)}
+.fav-btn.sm{font-size:13px}
+table.cmp th.fav-col,table.cmp td.fav-col{width:36px;text-align:center;padding-left:6px;padding-right:6px}
+.save-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.save-row .lbl{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint)}
+.savechip{display:inline-flex;align-items:center;gap:6px;font-family:"IBM Plex Sans";font-size:12px;padding:6px 11px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;color:var(--ink-soft);cursor:pointer}
+.savechip:hover{border-color:var(--signal);color:var(--signal)}
+.savechip.on{border-color:var(--signal);color:var(--signal);background:var(--signal-soft)}
+.savechip .h{font-size:14px;line-height:1}
+
+/* ---- account: my-items cards ---- */
+.item-card{border:1px solid var(--line-soft);border-radius:var(--radius);background:#fff;padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+.item-card .b{font-family:"Space Grotesk";font-weight:600;font-size:14px}
+.item-card .meta{font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint);margin-top:3px;line-height:1.5}
+.item-card .actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}

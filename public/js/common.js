@@ -5,6 +5,8 @@
 (function () {
   "use strict";
 
+  let favCache = null; // cached favorite ids for the logged-in user
+
   /* ---------- material palette (mirrors engine/UI colors) ---------- */
   const MAT = {
     gut:      { label: "Natural gut",       hex: "#D8A24A" },
@@ -73,6 +75,7 @@
 
   /* ---------- nav / auth chrome ---------- */
   function renderAuth() {
+    favCache = null; // auth changed -> favorites cache is stale
     const box = document.getElementById("siteAuth");
     if (!box) return;
     const u = TLAuth.user;
@@ -104,7 +107,54 @@
   // right after this file can await TLAuth.ready instead of racing it.
   TLAuth.ready = TLAuth.refresh();
 
-  function initChrome() { markActiveNav(); renderAuth(); }
+  /* ---------- favorites (My Rackets / My Strings) ---------- */
+  const TLFav = {
+    async ids(force) {
+      if (!TLAuth.user) return { rackets: [], strings: [] };
+      if (favCache && !force) return favCache;
+      try { favCache = await api("/api/favorites/ids"); }
+      catch (_) { favCache = { rackets: [], strings: [] }; }
+      return favCache;
+    },
+    async isSaved(kind, id) {
+      const ids = await this.ids();
+      return (kind === "racket" ? ids.rackets : ids.strings).includes(Number(id));
+    },
+    // toggles; returns new saved-state (true/false). Guests are sent to login.
+    async toggle(kind, id, nextUrl) {
+      if (!TLAuth.user) {
+        location.href = "/account.html?next=" + encodeURIComponent(nextUrl || location.pathname);
+        return null;
+      }
+      const saved = await this.isSaved(kind, id);
+      if (saved) await api("/api/favorites/" + kind + "/" + id, { method: "DELETE" });
+      else await api("/api/favorites", { method: "POST", body: JSON.stringify({ kind, item_id: Number(id) }) });
+      favCache = null;
+      return !saved;
+    },
+  };
+  window.TLFav = TLFav;
+
+  /* ---------- site visitor counter ---------- */
+  const hasCookie = (name) => document.cookie.split(";").some((c) => c.trim().startsWith(name + "="));
+  async function visitorCounter() {
+    let visits = null;
+    try {
+      if (!hasCookie("tl_v")) {
+        document.cookie = "tl_v=1; Path=/; Max-Age=" + (60 * 60 * 6) + "; SameSite=Lax";
+        visits = (await api("/api/visit", { method: "POST" })).visits;
+      } else {
+        visits = (await api("/api/stats")).visits;
+      }
+    } catch (_) { return; }
+    const foot = document.querySelector(".foot-in");
+    if (!foot || visits == null) return;
+    let el = document.getElementById("visitCount");
+    if (!el) { el = document.createElement("div"); el.id = "visitCount"; el.className = "visits"; foot.appendChild(el); }
+    el.innerHTML = '<span class="eye">\u{1F441}</span> ' + Number(visits).toLocaleString() + " visits";
+  }
+
+  function initChrome() { markActiveNav(); renderAuth(); visitorCounter(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initChrome);
   else initChrome();
 })();

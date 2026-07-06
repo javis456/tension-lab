@@ -10,11 +10,15 @@ const app = express();
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (req, res) =>
-  res.json({ ok: true, ai: !!process.env.ANTHROPIC_API_KEY }));
+  res.json({
+    ok: true,
+    ai: { anthropic: !!process.env.ANTHROPIC_API_KEY, deepseek: !!process.env.DEEPSEEK_API_KEY },
+  }));
 
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api", require("./routes/data"));
 app.use("/api/setups", require("./routes/setups"));
+app.use("/api/favorites", require("./routes/favorites"));
 app.use("/api/admin", require("./routes/admin"));
 
 // Static files. On Vercel these are served by the platform/CDN from /public,

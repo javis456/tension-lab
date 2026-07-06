@@ -274,3 +274,18 @@ INSERT INTO rackets (id,slug,brand,name,ver,year,mains,crosses,head_size,ra,weig
   (145,'percept97d_2023','Yonex','Percept 97D','',2023,18,20,97,63,320,'feel & control','A flexible, feel-rich control frame for touch players.')
 ON CONFLICT (id) DO NOTHING;
 SELECT setval(pg_get_serial_sequence('rackets','id'), GREATEST((SELECT MAX(id) FROM rackets), 1));
+
+-- ---- v2: favorites + visitor counter ----
+CREATE TABLE IF NOT EXISTS favorites (
+  id         SERIAL PRIMARY KEY,
+  user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  kind       TEXT NOT NULL CHECK (kind IN ('racket','string')),
+  item_id    INTEGER NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (user_id, kind, item_id)
+);
+CREATE TABLE IF NOT EXISTS site_stats (
+  key   TEXT PRIMARY KEY,
+  value BIGINT NOT NULL DEFAULT 0
+);
+INSERT INTO site_stats (key, value) VALUES ('visits', 0) ON CONFLICT (key) DO NOTHING;
