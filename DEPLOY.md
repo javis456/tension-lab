@@ -26,10 +26,11 @@ everything — three quick steps:
    folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
 2. **Run the database updates.** In **Supabase → SQL Editor → New query**, run any migration
    files in the `supabase/` folder you haven't run yet — for this version that's
-   **`supabase/migration-v4.sql`** (it adds the email-confirmation columns). If you skipped an
-   earlier update, run the lower-numbered ones too. They're safe and won't touch your data.
+   **`supabase/migration-v5.sql`** (it adds usernames + the Clubs tables and creates the default
+   "Thailand Tennis Club"). If you skipped earlier updates, run the lower-numbered ones too.
+   They're safe and won't touch your data.
 3. **(Optional) Turn on extras:** DeepSeek (cheaper AI), **Google sign-in**, and
-   **email confirmation** for new sign-ups — all covered in their own sections below.
+   **email confirmation** for new sign-ups — each has its own section below.
 
 That's it. Your accounts, saved combinations, rackets, and feedback are all preserved. The rest
 of this guide is the full first-time setup.
@@ -268,6 +269,25 @@ feel, durability, tension), each 0–100; gauges go in one cell like `1.30|1.25`
   new deploy. Go to **Deployments → ⋯ → Redeploy**.
 - **The Admin link won't appear:** make sure you ran the `UPDATE users…` line with the exact
   email you registered, then logged out and back in.
+
+---
+
+---
+
+## Clubs (community)
+
+The **Clubs** tab is where players share with each other. It works the moment you run the v5
+migration — no extra setup:
+
+- Everyone who logs in **automatically joins the default "Thailand Tennis Club."** (Rename it
+  later by editing its row in Supabase, or change the name in `supabase/migration-v5.sql` before
+  running it.)
+- Members can **share a saved combination or a game feedback** into a club; everyone in the club
+  can **like, comment, and save** the shared combination to their own account.
+- Anyone can **create a club** (becoming its admin) or **request to join** others. Club **admins
+  invite players by username and approve join requests.**
+- Because posts show usernames, **every account now has a username** — new sign-ups pick one at
+  registration; existing/Google users are asked to choose one the first time they open Clubs.
 
 ---
 

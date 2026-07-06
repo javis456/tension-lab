@@ -4,7 +4,7 @@ const { cookieUserId } = require("../auth");
 async function currentUser(req) {
   const uid = cookieUserId(req);
   if (!uid) return null;
-  return one("SELECT id, email, role FROM users WHERE id=$1", [uid]);
+  return one("SELECT id, email, role, username FROM users WHERE id=$1", [uid]);
 }
 
 // wrap async middleware so thrown errors become 500s instead of hanging

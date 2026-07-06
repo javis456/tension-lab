@@ -18,6 +18,7 @@
     document.querySelectorAll("#authTabs button").forEach((b) => b.classList.toggle("on", b.getAttribute("data-tab") === t));
     $("authSubmit").textContent = t === "register" ? "Create account" : "Log in";
     $("pwLabel").textContent = t === "register" ? "Password (min 8 characters)" : "Password";
+    $("unameRow").classList.toggle("hide", t !== "register");
     hideMsg();
   }
   const showMsg = (m, ok) => { const el = $("authMsg"); el.textContent = m; el.className = "form-msg " + (ok ? "ok" : "err"); };
@@ -29,7 +30,9 @@
     const btn = $("authSubmit"); btn.disabled = true; const orig = btn.textContent; btn.textContent = "…";
     try {
       if (tab === "register") {
-        const d = await api("/api/auth/register", { method: "POST", body: JSON.stringify({ email, password }) });
+        const username = $("username").value.trim();
+        if (!username) return showMsg("Choose a username.");
+        const d = await api("/api/auth/register", { method: "POST", body: JSON.stringify({ email, password, username }) });
         if (d && d.pending) { showPending(email); return; }   // must confirm email first
         window.TLAuth.user = d.user; // auto-verified path
         if (nextUrl) { location.href = nextUrl; return; }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tension Lab · Clubs — by Mensin Tennis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-page="clubs">
+
+<header class="site">
+  <div class="site-in">
+    <a class="site-brand" href="/">
+      <span class="logo">TENSION<b>·</b>LAB</span>
+      <span class="by">by Mensin Tennis</span>
+    </a>
+    <nav class="site-nav">
+      <a href="/" data-nav="setup">Setup String</a>
+      <a href="/compare.html" data-nav="compare">String Comparison</a>
+    </nav>
+    <div class="site-auth" id="siteAuth"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="guestView" class="hide">
+    <div class="page-head" style="text-align:center">
+      <h1>Clubs</h1>
+      <p style="margin:0 auto">Join the community to share your string combinations and match feedback, like and comment on others', and save setups you want to try.</p>
+    </div>
+    <div style="text-align:center;margin-top:16px"><a class="btn" href="/account.html?next=/clubs.html">Log in to join</a></div>
+  </div>
+
+  <div id="clubsView" class="hide">
+    <div class="page-head"><h1>Clubs</h1>
+      <p>Share your setups and match feedback with your clubs. You're automatically in the home club.</p></div>
+    <div class="clubs-layout">
+      <aside class="club-side" id="clubSide"></aside>
+      <main class="club-main" id="clubMain"><div class="empty-note" style="border:0">Select a club.</div></main>
+    </div>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="foot-in">
+    <div class="fb">TENSION<b>·</b>LAB <span style="font-family:'IBM Plex Mono';font-weight:400;font-size:11px;color:var(--ink-faint)">by Mensin Tennis</span></div>
+    <div>A physics-based string configurator. Scores are structured estimates, not lab measurements.</div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-back hide" id="modalBack"><div class="modal">
+  <div class="modal-h"><h3 id="modalTitle">…</h3><button class="modal-x" id="modalX">×</button></div>
+  <div class="modal-b" id="modalBody"></div>
+</div></div>
+
+<script src="/js/engine.js"></script>
+<script src="/js/chart.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/clubs.js"></script>
+</body>
+</html>

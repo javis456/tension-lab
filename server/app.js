@@ -28,6 +28,7 @@ app.use("/api/setups", require("./routes/setups"));
 app.use("/api/favorites", require("./routes/favorites"));
 app.use("/api/my", require("./routes/my"));
 app.use("/api/feedback", require("./routes/feedback"));
+app.use("/api", require("./routes/clubs"));
 app.use("/api/admin", require("./routes/admin"));
 
 // Static files. On Vercel these are served by the platform/CDN from /public,

@@ -4,7 +4,9 @@ A full-stack tennis string configurator: design a setup and get a physics-based 
 (**Setup String**), compare every string side by side (**String Comparison**), save setups,
 rackets, and strings to a free account (**My Tension Lab** tabs), and manage the catalog from an
 **admin portal** with an **AI Update** button (Anthropic or DeepSeek) that ingests new products.
-A small **visitor counter** sits in the footer.
+A **Clubs** community lets players share their combinations and match feedback, like, comment,
+and save each other's setups — everyone auto-joins a default club. A small **visitor counter**
+sits in the footer.
 
 This edition runs on the free **GitHub → Supabase → Vercel** stack.
 **To put it online, follow [DEPLOY.md](./DEPLOY.md)** — a click-by-click, no-coding guide.

@@ -438,3 +438,49 @@ table.cmp th.fav-col,table.cmp td.fav-col{width:36px;text-align:center;padding-l
 .bulk-sum{font-family:"IBM Plex Mono";font-size:12px;color:var(--ink);margin-bottom:8px}
 .bulk-warn{font-family:"IBM Plex Mono";font-size:10.5px;color:#8a5a1e;margin-top:3px}
 #bulkFile{max-width:100%}
+
+/* ======================= CLUBS ======================= */
+.clubs-layout{display:grid;grid-template-columns:250px 1fr;gap:20px;align-items:start}
+@media(max-width:760px){.clubs-layout{grid-template-columns:1fr}}
+.club-side{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:12px}
+.side-h{font-family:"IBM Plex Mono";font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);margin:10px 2px 6px}
+.side-h:first-child{margin-top:0}
+.club-item{display:block;width:100%;text-align:left;border:1px solid transparent;background:none;border-radius:var(--radius);padding:8px 10px;cursor:pointer;margin-bottom:2px}
+.club-item:hover{background:#fff;border-color:var(--line-soft)}
+.club-item.on{background:var(--teal);border-color:var(--teal)}
+.club-item.on .cn,.club-item.on .cm{color:#fff}
+.club-item .cn{display:block;font-family:"Space Grotesk";font-weight:600;font-size:13.5px;color:var(--ink)}
+.club-item .cm{display:block;font-family:"IBM Plex Mono";font-size:10.5px;color:var(--ink-faint)}
+.home{font-family:"IBM Plex Mono";font-size:9px;background:var(--signal-soft);color:var(--signal);padding:1px 5px;border-radius:8px;vertical-align:1px}
+.club-invite{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 8px;font-size:12.5px;border-top:1px solid var(--line-soft)}
+.club-main{min-width:0}
+.club-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}
+.club-head h2{margin:0;font-size:21px}
+.club-head p{margin:3px 0 0;font-size:13px;color:var(--ink-soft);line-height:1.5}
+.admin-box{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:12px;margin-bottom:14px}
+.admin-sub{font-family:"IBM Plex Mono";font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);margin:10px 0 6px}
+.admin-sub:first-child{margin-top:0}
+.mrow{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:4px 0}
+.compose{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--line-soft);border-radius:var(--radius);padding:10px 12px;margin-bottom:16px}
+.compose .lbl{font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-soft)}
+.feed{display:flex;flex-direction:column;gap:14px}
+.post{border:1px solid var(--line-soft);border-radius:var(--radius);background:#fff;padding:14px}
+.post-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px}
+.post-head .pa{font-family:"Space Grotesk";font-weight:600;color:var(--teal-deep)}
+.post-head .pd{color:var(--ink-faint);font-family:"IBM Plex Mono";font-size:11px}
+.pc-title{font-family:"Space Grotesk";font-weight:600;font-size:15px}
+.pc-meta{font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint);margin:2px 0 8px}
+.mini-scores{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:5px;margin-bottom:10px}
+.mini-scores .ms{display:flex;align-items:center;gap:6px;font-family:"IBM Plex Mono";font-size:10px}
+.mini-scores .msl{width:24px;color:var(--ink-faint)}
+.mini-scores .msbar{flex:1;height:5px;background:var(--paper-2);border-radius:3px;overflow:hidden}
+.mini-scores .msbar i{display:block;height:100%;background:var(--teal)}
+.mini-scores .msv{width:20px;text-align:right;color:var(--ink-soft)}
+.post-actions{display:flex;gap:14px;margin-top:6px;border-top:1px solid var(--line-soft);padding-top:8px}
+.like-btn.liked{color:var(--signal)}
+.comments{margin-top:10px;border-top:1px solid var(--line-soft);padding-top:10px}
+.comment{font-size:12.5px;padding:4px 0;line-height:1.5}
+.comment .ca{font-family:"Space Grotesk";font-weight:600;color:var(--teal-deep)}
+.cmt-add{display:flex;gap:8px;margin-top:8px}
+.cmt-add input{flex:1}
+.post-fb .fb-chart{margin:8px 0}

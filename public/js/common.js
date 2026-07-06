@@ -127,6 +127,12 @@
   }
 
   function markActiveNav() {
+    const nav = document.querySelector(".site-nav");
+    if (nav && !nav.querySelector('a[data-nav="clubs"]')) {
+      const a = document.createElement("a");
+      a.href = "/clubs.html"; a.setAttribute("data-nav", "clubs"); a.textContent = "Clubs";
+      nav.appendChild(a);
+    }
     const page = document.body.getAttribute("data-page");
     document.querySelectorAll(".site-nav a[data-nav]").forEach((a) => {
       a.classList.toggle("on", a.getAttribute("data-nav") === page);
