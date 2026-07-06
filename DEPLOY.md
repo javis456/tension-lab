@@ -26,9 +26,8 @@ everything — three quick steps:
    folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
 2. **Run the database updates.** In **Supabase → SQL Editor → New query**, run any migration
    files in the `supabase/` folder you haven't run yet — for this version that's
-   **`supabase/migration-v5.sql`** (it adds usernames + the Clubs tables and creates the default
-   "Thailand Tennis Club"). If you skipped earlier updates, run the lower-numbered ones too.
-   They're safe and won't touch your data.
+   **`supabase/migration-v6.sql`** (post captions + the one-time username-change lock). If you
+   skipped earlier updates, run the lower-numbered ones too. They're safe and won't touch your data.
 3. **(Optional) Turn on extras:** DeepSeek (cheaper AI), **Google sign-in**, and
    **email confirmation** for new sign-ups — each has its own section below.
 

@@ -133,38 +133,44 @@
       return '<div class="ms"><span class="msl">' + a.nm.slice(0, 3) + '</span><span class="msbar"><i style="width:' + v + '%"></i></span><span class="msv">' + v + "</span></div>";
     }).join("") + "</div>";
   }
+  function avatar(name) { return '<span class="avatar">' + esc((name || "?").charAt(0).toUpperCase()) + "</span>"; }
   function postCard(p) {
-    const when = new Date(p.created_at).toLocaleDateString();
+    const when = new Date(p.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    const kindLabel = p.kind === "combo" ? "shared a combination" : "shared match feedback";
     let body = "";
     if (p.kind === "combo") {
       const c = p.data.config || {};
       const strings = c.hybrid ? esc(c.mains) + " / " + esc(c.crosses) : esc(c.mains || "");
-      body = '<div class="post-combo"><div class="pc-title">' + esc(p.data.name || "Combination") + "</div>" +
+      body = '<div class="pc-title"><span class="kind-chip combo">String combo</span>' + esc(p.data.name || "Combination") + "</div>" +
         '<div class="pc-meta">' + esc(c.racket || "") + " · " + strings + (c.mainTension ? " · " + esc(c.mainTension) + " lb" : "") + "</div>" +
         miniScores(p.data.scores) +
-        '<button class="btn ghost sm save-combo" data-id="' + p.id + '">&hearts; Save this combination</button></div>';
+        '<button class="btn ghost sm save-combo" data-id="' + p.id + '">&hearts; Save this combination</button>';
     } else {
       const f = p.data;
-      body = '<div class="post-fb"><div class="pc-title">' + esc(f.racket_label || "Setup") + "</div>" +
+      body = '<div class="pc-title"><span class="kind-chip fb">Match feedback</span>' + esc(f.racket_label || "Setup") + "</div>" +
         '<div class="pc-meta">' + esc(f.combo_label || "") + (f.overall != null ? " · overall " + f.overall + "/100" : "") + "</div>" +
         '<div class="fb-chart">' + window.TLChart.radar(f.algo_scores, f.player_scores, AXES) + window.TLChart.legend() + "</div>" +
-        (f.notes ? '<div class="fb-notes"><span class="lbl">Note</span>' + esc(f.notes) + "</div>" : "") + "</div>";
+        (f.notes ? '<blockquote class="pc-note">' + esc(f.notes) + "</blockquote>" : "");
     }
-    return '<div class="post" data-post="' + p.id + '">' +
-      '<div class="post-head"><span class="pa">@' + esc(p.author) + '</span><span class="pd">' + esc(when) +
-        (p.mine ? ' · <button class="btn link del-post" data-id="' + p.id + '">delete</button>' : "") + "</span></div>" +
-      body +
+    const caption = p.caption ? '<div class="pc-caption">' + esc(p.caption) + "</div>" : "";
+    return '<article class="post" data-post="' + p.id + '">' +
+      '<div class="post-head">' + avatar(p.author) +
+        '<div class="ph-meta"><span class="pa">@' + esc(p.author) + '</span><span class="pk">' + kindLabel + " · " + esc(when) + "</span></div>" +
+        (p.mine ? '<button class="btn link del-post" data-id="' + p.id + '">delete</button>' : "") +
+      "</div>" + caption +
+      '<div class="post-body">' + body + "</div>" +
       '<div class="post-actions">' +
-        '<button class="btn link like-btn' + (p.liked ? " liked" : "") + '" data-id="' + p.id + '">' + (p.liked ? "♥" : "♡") + ' <span class="lc">' + p.likes + "</span></button>" +
-        '<button class="btn link cmt-btn" data-id="' + p.id + '">💬 <span>' + p.comments + "</span></button>" +
+        '<button class="act like-btn' + (p.liked ? " liked" : "") + '" data-id="' + p.id + '"><span class="ic">' + (p.liked ? "♥" : "♡") + '</span> <span class="lc">' + p.likes + "</span></button>" +
+        '<button class="act cmt-btn" data-id="' + p.id + '"><span class="ic">💬</span> <span>' + p.comments + "</span></button>" +
       "</div>" +
-      '<div class="comments hide" id="cmts_' + p.id + '"></div>';
+      '<div class="comments hide" id="cmts_' + p.id + '"></div>' +
+    "</article>";
   }
   function wirePosts() {
     document.querySelectorAll(".like-btn").forEach((b) => b.addEventListener("click", async () => {
       try { const d = await api("/api/posts/" + b.getAttribute("data-id") + "/like", { method: "POST" });
         b.classList.toggle("liked", d.liked); b.querySelector(".lc").textContent = d.likes;
-        b.childNodes[0].textContent = (d.liked ? "♥" : "♡") + " ";
+        b.querySelector(".ic").textContent = d.liked ? "♥" : "♡";
       } catch (e) { toast(e.message, true); } }));
     document.querySelectorAll(".cmt-btn").forEach((b) => b.addEventListener("click", () => toggleComments(b.getAttribute("data-id"))));
     document.querySelectorAll(".save-combo").forEach((b) => b.addEventListener("click", async () => {
@@ -203,9 +209,14 @@
       : '<option value="' + it.id + '">' + esc(it.racket_label || "Setup") + " — " + esc(it.combo_label || "") + "</option>").join("");
     openModal("Share " + (kind === "combo" ? "a combination" : "game feedback"),
       '<div class="form-row"><label>Choose one to share</label><div class="selwrap"><select id="share_item">' + opts + "</select></div></div>" +
+      '<div class="form-row"><label>Add a caption <span class="hint" style="font-weight:400;text-transform:none;color:var(--ink-faint)">— tell members what to notice</span></label>' +
+        '<textarea id="share_caption" rows="2" maxlength="400" placeholder="e.g. Switched to a softer poly — way easier on my elbow, still great spin."></textarea></div>' +
       '<div style="display:flex;justify-content:flex-end"><button class="btn sig" id="share_go">Share to club</button></div>');
     $("share_go").addEventListener("click", async () => {
-      const body = kind === "combo" ? { kind: "combo", setupId: Number($("share_item").value) } : { kind: "feedback", feedbackId: Number($("share_item").value) };
+      const caption = $("share_caption").value.trim();
+      const body = kind === "combo"
+        ? { kind: "combo", setupId: Number($("share_item").value), caption }
+        : { kind: "feedback", feedbackId: Number($("share_item").value), caption };
       try { await api("/api/clubs/" + currentClubId + "/posts", { method: "POST", body: JSON.stringify(body) }); toast("Shared!"); closeModal(); selectClub(currentClubId); }
       catch (e) { toast(e.message, true); }
     });

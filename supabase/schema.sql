@@ -341,3 +341,7 @@ CREATE INDEX IF NOT EXISTS idx_post_comments_post ON post_comments(post_id, crea
 INSERT INTO clubs (name, slug, description, is_default)
 VALUES ('Thailand Tennis Club', 'thailand-tennis-club', 'The home club for every Tension Lab player. Share your setups and match feedback here.', true)
 ON CONFLICT (slug) DO NOTHING;
+
+-- ---- v6: post captions + one-time username change ----
+ALTER TABLE club_posts ADD COLUMN IF NOT EXISTS caption TEXT NOT NULL DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS username_change_used BOOLEAN NOT NULL DEFAULT false;

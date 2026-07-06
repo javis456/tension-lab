@@ -115,13 +115,13 @@ router.get("/clubs/:id", async (req, res, next) => {
        WHERE m.club_id=$1 AND m.status='requested' ORDER BY m.created_at`, [club.id]);
 
     const posts = (await many(
-      `SELECT p.id, p.kind, p.data, p.created_at, u.username AS author, p.user_id,
+      `SELECT p.id, p.kind, p.data, p.caption, p.created_at, u.username AS author, p.user_id,
         (SELECT count(*) FROM post_likes l WHERE l.post_id=p.id) AS likes,
         (SELECT count(*) FROM post_comments c WHERE c.post_id=p.id) AS comments,
         EXISTS(SELECT 1 FROM post_likes l WHERE l.post_id=p.id AND l.user_id=$2) AS liked
        FROM club_posts p LEFT JOIN users u ON u.id=p.user_id
        WHERE p.club_id=$1 ORDER BY p.created_at DESC LIMIT 100`, [club.id, uid(req)]
-    )).map((p) => ({ id: p.id, kind: p.kind, data: p.data, created_at: p.created_at, author: p.author || "unknown",
+    )).map((p) => ({ id: p.id, kind: p.kind, data: p.data, caption: p.caption || "", created_at: p.created_at, author: p.author || "unknown",
       mine: p.user_id === uid(req), likes: Number(p.likes), comments: Number(p.comments), liked: p.liked }));
 
     res.json({
@@ -170,6 +170,7 @@ router.post("/clubs/:id/posts", async (req, res, next) => {
     const me = await membership(req.params.id, uid(req));
     if (!isActive(me)) return res.status(403).json({ error: "Join this club before posting." });
     const kind = req.body.kind === "feedback" ? "feedback" : "combo";
+    const caption = String(req.body.caption || "").trim().slice(0, 400);
     let data;
     if (kind === "combo") {
       const s = await one("SELECT name, config, scores FROM setups WHERE id=$1 AND user_id=$2", [req.body.setupId, uid(req)]);
@@ -180,7 +181,7 @@ router.post("/clubs/:id/posts", async (req, res, next) => {
       if (!f) return res.status(404).json({ error: "Feedback not found." });
       data = f;
     }
-    const row = await one("INSERT INTO club_posts (club_id,user_id,kind,data) VALUES ($1,$2,$3,$4::jsonb) RETURNING id", [req.params.id, uid(req), kind, JSON.stringify(data)]);
+    const row = await one("INSERT INTO club_posts (club_id,user_id,kind,data,caption) VALUES ($1,$2,$3,$4::jsonb,$5) RETURNING id", [req.params.id, uid(req), kind, JSON.stringify(data), caption]);
     res.json({ id: row.id });
   } catch (e) { next(e); }
 });

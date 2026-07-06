@@ -54,7 +54,7 @@ router.post("/register", wrap(async (req, res) => {
   }
 
   const row = await one(
-    "INSERT INTO users (email, password_hash, role, username, email_verified) VALUES ($1,$2,'user',$3,true) RETURNING id, email, role, username",
+    "INSERT INTO users (email, password_hash, role, username, email_verified) VALUES ($1,$2,'user',$3,true) RETURNING id, email, role, username, username_change_used",
     [addr, hash, username]
   );
   setAuthCookie(res, row.id);
@@ -72,7 +72,7 @@ router.post("/login", wrap(async (req, res) => {
     return res.status(403).json({ error: "Please confirm your email first — check your inbox.", needsVerification: true, email: addr });
   }
   setAuthCookie(res, row.id);
-  res.json({ user: { id: row.id, email: row.email, role: row.role, username: row.username } });
+  res.json({ user: { id: row.id, email: row.email, role: row.role, username: row.username, username_change_used: row.username_change_used } });
 }));
 
 // clicked from the confirmation email
@@ -110,12 +110,12 @@ router.post("/google", wrap(async (req, res) => {
   try { payload = await google.verify(String(req.body.credential || ""), clientId); }
   catch (e) { return res.status(401).json({ error: e.message || "Google sign-in failed." }); }
   const addr = String(payload.email).trim().toLowerCase();
-  let user = await one("SELECT id, email, role, username FROM users WHERE email=$1", [addr]);
+  let user = await one("SELECT id, email, role, username, username_change_used FROM users WHERE email=$1", [addr]);
   if (!user) {
     const rnd = crypto.randomBytes(24).toString("hex");
     const uname = await uniqueUsernameFrom((payload.name || addr.split("@")[0]));
     user = await one(
-      "INSERT INTO users (email, password_hash, role, username, email_verified) VALUES ($1,$2,'user',$3,true) RETURNING id, email, role, username",
+      "INSERT INTO users (email, password_hash, role, username, email_verified) VALUES ($1,$2,'user',$3,true) RETURNING id, email, role, username, username_change_used",
       [addr, bcrypt.hashSync(rnd, 10), uname]
     );
   } else {
@@ -125,14 +125,27 @@ router.post("/google", wrap(async (req, res) => {
   res.json({ user });
 }));
 
-// set / change username (also used by legacy accounts that don't have one yet)
+// set / change username. The initial set (for accounts without one) is free;
+// after that, each user gets exactly ONE change.
 router.post("/username", wrap(async (req, res) => {
   const me = await currentUser(req);
   if (!me) return res.status(401).json({ error: "Please log in." });
   const username = String(req.body.username || "").trim();
   if (!validUsername(username)) return res.status(400).json({ error: "Username must be 3–20 letters, numbers or underscores." });
+
+  const isChange = !!me.username; // they already have one -> this is their change
+  if (isChange && me.username_change_used) {
+    return res.status(403).json({ error: "You've already used your one username change." });
+  }
+  if (username.toLowerCase() === String(me.username || "").toLowerCase()) {
+    return res.status(400).json({ error: "That's already your username." });
+  }
   if (await usernameTaken(username, me.id)) return res.status(409).json({ error: "That username is taken — pick another." });
-  const row = await one("UPDATE users SET username=$1 WHERE id=$2 RETURNING id, email, role, username", [username, me.id]);
+
+  const row = await one(
+    "UPDATE users SET username=$1, username_change_used=$2 WHERE id=$3 RETURNING id, email, role, username, username_change_used",
+    [username, isChange ? true : me.username_change_used, me.id]
+  );
   res.json({ user: row });
 }));
 

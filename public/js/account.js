@@ -245,11 +245,41 @@
     $("tab-combos").classList.toggle("hide", t !== "combos");
     $("tab-feedback").classList.toggle("hide", t !== "feedback");
   }
+  function renderUsernameStrip() {
+    const el = $("usernameStrip"); if (!el) return;
+    const u = window.TLAuth.user; if (!u) return;
+    if (!u.username) {
+      el.innerHTML = '<span class="us-label">No username yet</span><button class="btn sm" id="setUnameBtn">Choose a username</button>';
+      $("setUnameBtn").addEventListener("click", () => usernameModal(false));
+    } else if (!u.username_change_used) {
+      el.innerHTML = '<span class="us-name">@' + esc(u.username) + '</span><button class="btn ghost sm" id="chgUnameBtn">Change username</button><span class="us-note">you can change it once</span>';
+      $("chgUnameBtn").addEventListener("click", () => usernameModal(true));
+    } else {
+      el.innerHTML = '<span class="us-name">@' + esc(u.username) + '</span><span class="us-note us-lock">🔒 username locked</span>';
+    }
+  }
+  function usernameModal(isChange) {
+    openModal(isChange ? "Change your username" : "Choose a username",
+      '<p class="sub" style="font-size:12.5px;color:var(--ink-soft);margin:0 0 12px">' +
+        (isChange ? "You can change your username <b>once</b> — choose carefully." : "Other players see this on your posts and comments.") +
+        " 3–20 letters, numbers or underscores.</p>" +
+      '<div class="form-row"><input id="u_new" placeholder="e.g. topspin_tom" autocomplete="username"></div>' +
+      '<div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn ghost" id="uCancel">Cancel</button>' +
+        '<button class="btn" id="uSave">' + (isChange ? "Save change" : "Save username") + "</button></div>");
+    $("uCancel").addEventListener("click", closeModal);
+    $("uSave").addEventListener("click", async () => {
+      try {
+        const d = await api("/api/auth/username", { method: "POST", body: JSON.stringify({ username: $("u_new").value.trim() }) });
+        window.TLAuth.user = d.user; closeModal(); renderUsernameStrip(); toast("Username saved!");
+      } catch (e) { toast(e.message, true); }
+    });
+  }
+
   function showView() {
     const u = window.TLAuth.user;
     $("authView").classList.toggle("hide", !!u);
     $("roomView").classList.toggle("hide", !u);
-    if (u) { loadMyRackets(); loadCombos(); loadFeedback(); }
+    if (u) { renderUsernameStrip(); loadMyRackets(); loadCombos(); loadFeedback(); }
     else { window.TL.mountGoogleSignIn("googleBtn").then((ok) => { if (ok) $("googleBtnWrap").style.display = "block"; }); }
   }
 
