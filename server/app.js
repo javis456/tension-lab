@@ -7,7 +7,7 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "8mb" })); // large enough for base64 racket photos
 
 app.get("/api/health", (req, res) =>
   res.json({

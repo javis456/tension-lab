@@ -89,7 +89,7 @@ header.top{
   flex:1 1 320px;min-width:280px;padding:22px 18px;
   display:flex;align-items:center;justify-content:center;
   background:
-    radial-gradient(120% 120% at 50% 0%,#12211E 0%,#0C1614 70%);
+    radial-gradient(130% 130% at 50% 0%,#F2F6F3 0%,#E1EAE4 74%);
 }
 .bed-side{
   flex:1 1 240px;min-width:230px;padding:20px;border-left:1px solid var(--line-soft);
@@ -574,3 +574,18 @@ table.cmp th.fav-col,table.cmp td.fav-col{width:36px;text-align:center;padding-l
 /* Thai typography */
 .lang-th #kContent,.lang-th #kTitle,.lang-th #kLede,.lang-th .k-card-t{font-family:"Noto Sans Thai","IBM Plex Sans",sans-serif}
 .lang-th .k-p,.lang-th .k-ul li,.lang-th .k-callout{line-height:1.85}
+
+/* ---- racket replica photos ---- */
+/* Setup preview: show the head (upper portion) of the racket */
+.racket-photo-wrap{width:100%;max-width:280px;height:300px;overflow:hidden;display:flex;justify-content:center;align-items:flex-start}
+.racket-photo-wrap img{width:100%;height:auto;display:block;filter:drop-shadow(0 8px 20px rgba(16,40,34,.18))}
+/* My Racket: lay the racket down (rotated) so it isn't too tall */
+.racket-item{display:block}
+.racket-item .racket-lay{width:100%;height:172px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,#F5F8F6,#EAF0EC);border-radius:10px;margin-bottom:12px}
+.racket-item .racket-lay img{width:150px;height:auto;transform:rotate(90deg);flex:0 0 auto;filter:drop-shadow(0 6px 14px rgba(16,40,34,.18))}
+.racket-item-row{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+
+/* ---- admin photo upload preview ---- */
+.photo-thumb{width:44px;height:64px;object-fit:contain;background:var(--panel);border-radius:6px;display:inline-block}
+.photo-thumb.bad{display:inline-flex;align-items:center;justify-content:center;color:var(--signal)}
+#photoFiles{max-width:100%}

@@ -10,9 +10,11 @@ router.use(requireAuth);
 router.get("/rackets", async (req, res, next) => {
   try {
     const rows = await many(
-      "SELECT * FROM rackets WHERE owner_user_id=$1 ORDER BY lower(brand), lower(name)", [req.user.id]
+      `SELECT r.*, (ri.racket_id IS NOT NULL) AS has_image FROM rackets r
+       LEFT JOIN racket_images ri ON ri.racket_id = r.id
+       WHERE r.owner_user_id=$1 ORDER BY lower(r.brand), lower(r.name)`, [req.user.id]
     );
-    res.json({ rackets: rows.map(mapRacket) });
+    res.json({ rackets: rows.map((r) => Object.assign(mapRacket(r), { has_image: r.has_image })) });
   } catch (e) { next(e); }
 });
 

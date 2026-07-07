@@ -198,6 +198,20 @@ function renderBed(res){
   const svg = $("bedSvg");
   const W=300,H=380;
   const racket = res ? res.racket : RACKETS[0];
+
+  // If this racket has a replica photo, show it (upper portion) instead of the mock bed.
+  const wrap = $("racketPhotoWrap"), photo = $("racketPhoto");
+  if (wrap && photo) {
+    if (racket && racket.img && racket._id != null) {
+      const src = "/api/rackets/" + racket._id + "/image";
+      if (photo.getAttribute("src") !== src) photo.setAttribute("src", src);
+      photo.onerror = () => { wrap.hidden = true; svg.style.display = ""; };
+      wrap.hidden = false; svg.style.display = "none";
+    } else {
+      wrap.hidden = true; svg.style.display = "";
+    }
+  }
+
   const nM = racket.pat[0], nC = racket.pat[1];
   const mainHex = res ? MAT[res.sMain.m].hex : "#888";
   const crossHex = res ? MAT[res.sCross.m].hex : "#888";
@@ -704,7 +718,7 @@ async function boot(){
     const [rs, rr] = await Promise.all([ fetch('/api/strings'), fetch('/api/rackets') ]);
     const sj = await rs.json(), rj = await rr.json();
     STRINGS = sj.strings.map(s=>({ b:s.brand, n:s.name, m:s.material, geo:s.geo, g:s.gauges, tier:s.tier, kf:s.known_for, cl:s.claim, r:s.ratings, price:s.price_usd, _id:s.id }));
-    RACKETS = rj.rackets.map(r=>({ id:(r.slug||('r'+r.id)), b:r.brand, n:r.name, ver:r.ver, year:r.year, pat:[r.mains,r.crosses], ra:r.ra, hs:r.head_size, wt:r.weight, char:r.char, kf:r.known_for, _id:r.id }));
+    RACKETS = rj.rackets.map(r=>({ id:(r.slug||('r'+r.id)), b:r.brand, n:r.name, ver:r.ver, year:r.year, pat:[r.mains,r.crosses], ra:r.ra, hs:r.head_size, wt:r.weight, char:r.char, kf:r.known_for, _id:r.id, img:!!r.has_image }));
   }catch(e){
     document.querySelector('.wrap').insertAdjacentHTML('afterbegin','<div class="panel" style="color:var(--red)">Could not load the catalog. Is the server running?</div>');
     return;

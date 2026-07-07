@@ -1,5 +1,5 @@
 const express = require("express");
-const { many, one, mapString, mapRacket } = require("../db");
+const { many, one, query, mapString, mapRacket } = require("../db");
 const { wrap, currentUser } = require("../middleware/auth");
 const engine = require("../../public/js/engine");
 
@@ -10,12 +10,13 @@ const allStrings = async () =>
   (await many("SELECT * FROM strings ORDER BY lower(brand), lower(name)")).map(mapString);
 const allRackets = async (userId) => {
   const rows = await many(
-    `SELECT * FROM rackets
-     WHERE owner_user_id IS NULL OR owner_user_id = $1
-     ORDER BY COALESCE(owner_user_id = $1, false) DESC, (brand='—') DESC, lower(brand), lower(name), year`,
+    `SELECT r.*, (ri.racket_id IS NOT NULL) AS has_image FROM rackets r
+     LEFT JOIN racket_images ri ON ri.racket_id = r.id
+     WHERE r.owner_user_id IS NULL OR r.owner_user_id = $1
+     ORDER BY COALESCE(r.owner_user_id = $1, false) DESC, (r.brand='—') DESC, lower(r.brand), lower(r.name), r.year`,
     [userId == null ? -1 : userId]
   );
-  return rows.map((r) => Object.assign(mapRacket(r), { mine: userId != null && r.owner_user_id === userId }));
+  return rows.map((r) => Object.assign(mapRacket(r), { mine: userId != null && r.owner_user_id === userId, has_image: r.has_image }));
 };
 
 router.get("/strings", wrap(async (req, res) => res.json({ strings: await allStrings() })));
@@ -73,6 +74,16 @@ router.get("/share/:shareId", wrap(async (req, res) => {
   );
   if (!row) return res.status(404).json({ error: "This shared feedback was not found." });
   res.json({ feedback: row, axes: engine.ATTRS });
+}));
+
+/* ---- racket photo (public, cached) ---- */
+router.get("/rackets/:id/image", wrap(async (req, res) => {
+  const r = await query("SELECT content_type, data FROM racket_images WHERE racket_id=$1", [req.params.id]);
+  if (!r.rows.length) return res.status(404).end();
+  const row = r.rows[0];
+  res.set("Content-Type", row.content_type || "image/png");
+  res.set("Cache-Control", "public, max-age=86400");
+  res.send(row.data); // pg returns bytea as a Buffer
 }));
 
 module.exports = router;

@@ -180,4 +180,32 @@ router.delete("/rackets/:id", wrap(async (req, res) => {
   res.json({ ok: true });
 }));
 
+/* ---- racket photo upload / delete ---- */
+const IMG_TYPES = { "image/png": 1, "image/jpeg": 1, "image/webp": 1 };
+router.post("/rackets/:id/image", async (req, res) => {
+  try {
+    const racket = await one("SELECT id FROM rackets WHERE id=$1", [req.params.id]);
+    if (!racket) return res.status(404).json({ error: "Racket not found." });
+    const ct = String(req.body.content_type || "").toLowerCase();
+    if (!IMG_TYPES[ct]) return res.status(400).json({ error: "Image must be PNG, JPEG or WebP." });
+    let b64 = String(req.body.data || "");
+    const comma = b64.indexOf(","); if (b64.startsWith("data:") && comma >= 0) b64 = b64.slice(comma + 1);
+    const buf = Buffer.from(b64, "base64");
+    if (!buf.length) return res.status(400).json({ error: "Empty image." });
+    if (buf.length > 5 * 1024 * 1024) return res.status(413).json({ error: "Image too large (max 5 MB)." });
+    await query(
+      `INSERT INTO racket_images (racket_id, content_type, data, updated_at) VALUES ($1,$2,$3, now())
+       ON CONFLICT (racket_id) DO UPDATE SET content_type=EXCLUDED.content_type, data=EXCLUDED.data, updated_at=now()`,
+      [req.params.id, ct, buf]
+    );
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+router.delete("/rackets/:id/image", async (req, res) => {
+  try {
+    await query("DELETE FROM racket_images WHERE racket_id=$1", [req.params.id]);
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 module.exports = router;

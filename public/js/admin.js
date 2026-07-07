@@ -57,7 +57,8 @@
     const rows = list.map((r) =>
       '<div class="dl-r" data-id="' + r.id + '">' +
         '<div class="b1">' + esc(r.brand) + "</div>" +
-        "<div>" + esc(r.name) + (r.ver ? ' <span style="color:var(--ink-faint)">' + esc(r.ver) + "</span>" : "") + "</div>" +
+        "<div>" + esc(r.name) + (r.ver ? ' <span style="color:var(--ink-faint)">' + esc(r.ver) + "</span>" : "") +
+          (r.has_image ? ' <span title="has photo" style="opacity:.6">📷</span>' : "") + "</div>" +
         "<div>" + esc(r.mains) + "×" + esc(r.crosses) + "</div>" +
         "<div>" + esc(r.head_size) + ' in²</div>' +
         '<div style="display:flex;gap:6px;justify-content:flex-end">' +
@@ -324,10 +325,142 @@
     } catch (e) { toast(e.message, true); btn.disabled = false; btn.textContent = "Import"; }
   }
 
+  /* ---------------- bulk racket photos ---------------- */
+  const STARTER_PHOTOS = ["Head-Speed-mp-2026.png", "Tecnifibre-tfight-300s.png", "Wilson-RF01.png", "Yonex-Vcore98-2026.png"];
+  let photoRackets = [];   // catalog for matching
+  let photoEntries = [];   // pending uploads
+
+  function normTokens(s) {
+    return String(s).toLowerCase()
+      .replace(/\.(png|jpe?g|webp)$/i, "")
+      .replace(/([a-z])(\d)/g, "$1 $2").replace(/(\d)([a-z])/g, "$1 $2")
+      .replace(/[^a-z0-9]+/g, " ").trim().split(/\s+/).filter(Boolean);
+  }
+  function matchRacket(filename) {
+    const fset = new Set(normTokens(filename));
+    let best = null, bs = 0;
+    for (const r of photoRackets) {
+      const rt = normTokens([r.brand, r.name, r.ver, r.year].filter(Boolean).join(" "));
+      const shared = rt.filter((t) => fset.has(t)).length;
+      const brandTok = normTokens(r.brand)[0];
+      const score = shared + (fset.has(brandTok) ? 1 : 0);
+      if (score > bs) { bs = score; best = r; }
+    }
+    return bs >= 2 ? best : null;
+  }
+  function resizeToDataUrl(blob, maxDim) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        const scale = Math.min(1, maxDim / Math.max(w, h));
+        w = Math.round(w * scale); h = Math.round(h * scale);
+        const c = document.createElement("canvas"); c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        let out = c.toDataURL("image/webp", 0.9); // small, keeps transparency
+        if (out.indexOf("data:image/webp") !== 0) out = c.toDataURL("image/png"); // fallback
+        resolve(out);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("bad image")); };
+      img.src = url;
+    });
+  }
+
+  async function photoModal() {
+    openModal("Upload racket photos",
+      '<p class="sub" style="font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin:0 0 12px">' +
+        'Select one or many racket images (PNG/JPG/WebP). Each file is auto-matched to a racket <b>by its file name</b> ' +
+        '(e.g. <span style="font-family:IBM Plex Mono;font-size:11px">Wilson-RF01.png</span> → Wilson RF 01). ' +
+        'Images are resized automatically. Check the matches, fix any if needed, then import.</p>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">' +
+        '<input type="file" id="photoFiles" accept="image/png,image/jpeg,image/webp" multiple style="font-size:12.5px">' +
+        '<button class="btn ghost sm" id="starterBtn">Load 4 starter photos</button>' +
+      "</div>" +
+      '<div id="photoStatus" class="ai-status" style="display:none"></div>' +
+      '<div id="photoPreview"></div>' +
+      '<div id="photoActions" style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px"><button class="btn ghost" id="mCancel">Close</button></div>');
+    $("mCancel").addEventListener("click", closeModal);
+    photoEntries = [];
+    if (!photoRackets.length) {
+      try { photoRackets = (await api("/api/rackets")).rackets; } catch (_) { photoRackets = []; }
+    }
+    $("photoFiles").addEventListener("change", (e) => addPhotoFiles([...e.target.files]));
+    $("starterBtn").addEventListener("click", loadStarterPhotos);
+  }
+
+  async function addPhotoFiles(files) {
+    const st = $("photoStatus"); st.style.display = "block"; st.className = "ai-status busy"; st.textContent = "Reading images…";
+    for (const f of files) {
+      try {
+        const dataUrl = await resizeToDataUrl(f, 820);
+        const m = matchRacket(f.name);
+        photoEntries.push({ name: f.name, dataUrl, racketId: m ? m.id : "" });
+      } catch (_) { photoEntries.push({ name: f.name, dataUrl: "", racketId: "", bad: true }); }
+    }
+    st.style.display = "none";
+    renderPhotoPreview();
+  }
+
+  async function loadStarterPhotos() {
+    const st = $("photoStatus"); st.style.display = "block"; st.className = "ai-status busy"; st.textContent = "Loading starter photos…";
+    const files = [];
+    for (const nm of STARTER_PHOTOS) {
+      try { const r = await fetch("/starter-rackets/" + nm); if (r.ok) { const b = await r.blob(); files.push(new File([b], nm, { type: b.type || "image/png" })); } }
+      catch (_) {}
+    }
+    st.style.display = "none";
+    if (!files.length) { toast("Starter photos not found in this deploy.", true); return; }
+    addPhotoFiles(files);
+  }
+
+  function optionsFor(selectedId) {
+    return '<option value="">— skip / choose —</option>' + photoRackets.map((r) =>
+      '<option value="' + r.id + '"' + (String(r.id) === String(selectedId) ? " selected" : "") + ">" +
+      esc(r.brand + " " + r.name + (r.ver ? " " + r.ver : "") + (r.year ? " (" + r.year + ")" : "")) + "</option>").join("");
+  }
+  function renderPhotoPreview() {
+    if (!photoEntries.length) { $("photoPreview").innerHTML = ""; return; }
+    const rows = photoEntries.map((e, i) => {
+      const thumb = e.dataUrl ? '<img src="' + e.dataUrl + '" class="photo-thumb">' : '<span class="photo-thumb bad">✕</span>';
+      const status = e.racketId ? '<span class="badge live">matched</span>' : '<span class="badge est">pick one</span>';
+      return '<tr><td>' + thumb + "</td><td>" + esc(e.name) + "<br>" + status + "</td>" +
+        '<td><div class="selwrap"><select data-i="' + i + '" class="photo-match">' + optionsFor(e.racketId) + "</select></div></td></tr>";
+    }).join("");
+    $("photoPreview").innerHTML =
+      '<div class="bulk-sum">' + photoEntries.filter((e) => e.racketId).length + " of " + photoEntries.length + " ready</div>" +
+      '<div class="table-scroll" style="max-height:320px;overflow:auto"><table class="cmp" style="min-width:0"><thead><tr><th>Photo</th><th>File → status</th><th>Assign to racket</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+    $("photoPreview").querySelectorAll(".photo-match").forEach((sel) =>
+      sel.addEventListener("change", () => { photoEntries[+sel.getAttribute("data-i")].racketId = sel.value; renderPhotoPreview(); }));
+    const ready = photoEntries.filter((e) => e.racketId && e.dataUrl).length;
+    $("photoActions").innerHTML = '<button class="btn ghost" id="mCancel">Close</button>' +
+      (ready ? '<button class="btn sig" id="photoImport">Import ' + ready + " photos</button>" : "");
+    $("mCancel").addEventListener("click", closeModal);
+    if (ready) $("photoImport").addEventListener("click", importPhotos);
+  }
+
+  async function importPhotos() {
+    const todo = photoEntries.filter((e) => e.racketId && e.dataUrl);
+    const btn = $("photoImport"); btn.disabled = true;
+    let done = 0, failed = 0;
+    for (const e of todo) {
+      btn.textContent = "Importing " + (done + failed + 1) + "/" + todo.length + "…";
+      try {
+        const ct = e.dataUrl.slice(5, e.dataUrl.indexOf(";")) || "image/png";
+        await api("/api/admin/rackets/" + e.racketId + "/image", { method: "POST", body: JSON.stringify({ data: e.dataUrl, content_type: ct }) });
+        done++;
+      } catch (_) { failed++; }
+    }
+    toast("Uploaded " + done + " photo" + (done === 1 ? "" : "s") + (failed ? " (" + failed + " failed)" : ""));
+    closeModal(); loadList();
+  }
+
   function initAdmin() {
     $("adminView").classList.remove("hide");
     loadAiModels();
     $("bulkBtn").addEventListener("click", bulkModal);
+    $("photoBulkBtn").addEventListener("click", photoModal);
     document.querySelectorAll("#adminTabs button").forEach((b) =>
       b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
     $("addBtn").addEventListener("click", openAdd);

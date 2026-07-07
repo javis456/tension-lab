@@ -345,3 +345,11 @@ ON CONFLICT (slug) DO NOTHING;
 -- ---- v6: post captions + one-time username change ----
 ALTER TABLE club_posts ADD COLUMN IF NOT EXISTS caption TEXT NOT NULL DEFAULT '';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS username_change_used BOOLEAN NOT NULL DEFAULT false;
+
+-- ---- v7: racket photos ----
+CREATE TABLE IF NOT EXISTS racket_images (
+  racket_id    INTEGER PRIMARY KEY REFERENCES rackets(id) ON DELETE CASCADE,
+  content_type TEXT NOT NULL,
+  data         BYTEA NOT NULL,
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+);

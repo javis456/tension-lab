@@ -79,14 +79,18 @@
 
   /* ---------------- MY RACKET ---------------- */
   function myRacketCard(r) {
-    return '<div class="item-card"><div>' +
+    const photo = r.has_image
+      ? '<div class="racket-lay"><img src="/api/rackets/' + r.id + '/image" alt="' + esc(r.brand) + " " + esc(r.name) + '" loading="lazy"></div>'
+      : "";
+    return '<div class="item-card racket-item">' + photo +
+      '<div class="racket-item-row"><div>' +
       '<div class="b">' + esc(r.brand) + " " + esc(r.name) + (r.ver ? " " + esc(r.ver) : "") + "</div>" +
       '<div class="meta">' + esc(r.mains) + "\u00d7" + esc(r.crosses) + " \u00b7 " + esc(r.head_size) +
         " in\u00b2 \u00b7 RA " + esc(r.ra) + " \u00b7 " + esc(r.weight) + "g</div></div>" +
       '<div class="actions">' +
         '<a class="btn ghost sm" href="/?racket=' + r.id + '">Use in Setup</a>' +
         '<button class="btn link del-myracket" data-id="' + r.id + '">Delete</button>' +
-      "</div></div>";
+      "</div></div></div>";
   }
   async function loadMyRackets() {
     try {
@@ -128,20 +132,32 @@
 
   /* ---------------- SAVED COMBINATION ---------------- */
   let setupsCache = [];
+  let racketImgSet = null; // ids of catalog rackets that have a photo
+  async function ensureRacketImgSet() {
+    if (racketImgSet) return racketImgSet;
+    racketImgSet = new Set();
+    try { (await api("/api/rackets")).rackets.forEach((r) => { if (r.has_image) racketImgSet.add(r.id); }); } catch (_) {}
+    return racketImgSet;
+  }
   function comboCard(s) {
     const c = s.config || {};
     const strings = c.hybrid ? esc(c.mains) + " / " + esc(c.crosses) : esc(c.mains || "—");
     const tens = c.hybrid ? (c.mainTension + " / " + c.crossTension + " lb") : (c.mainTension != null ? c.mainTension + " lb" : "");
-    return '<div class="item-card"><div>' +
+    const rid = c.racketId;
+    const photo = (rid != null && racketImgSet && racketImgSet.has(rid))
+      ? '<div class="racket-lay"><img src="/api/rackets/' + rid + '/image" alt="' + esc(c.racket || "") + '" loading="lazy"></div>' : "";
+    return '<div class="item-card racket-item">' + photo +
+      '<div class="racket-item-row"><div>' +
       '<div class="b">' + esc(s.name) + "</div>" +
       '<div class="meta">' + esc(c.racket || "") + "<br>" + strings + (tens ? " · " + esc(tens) : "") + (c.hybrid ? " · hybrid" : "") + "</div></div>" +
       '<div class="actions">' +
         '<a class="btn ghost sm" href="/?setup=' + s.id + '">Use in Setup</a>' +
         '<button class="btn link del-combo" data-id="' + s.id + '">Delete</button>' +
-      "</div></div>";
+      "</div></div></div>";
   }
   async function loadCombos() {
     try {
+      await ensureRacketImgSet();
       const d = await api("/api/setups"); setupsCache = d.setups;
       $("combosList").innerHTML = d.setups.length ? d.setups.map(comboCard).join("")
         : '<div class="empty-note">No saved combinations yet. Build one in <a href="/">Setup String</a> and hit \u201cSave this setup\u201d.</div>';

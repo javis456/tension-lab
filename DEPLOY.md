@@ -24,10 +24,12 @@ everything — three quick steps:
 
 1. **Update the code.** In your GitHub repo, upload the new files (drag the contents of this
    folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
-2. **Run the database updates.** This update is **front-end only** — the new **Knowledge**
-   page, the English/Thai toggle, and the login-flash fix need **no new database migration**.
-   (Just make sure you've already run migrations `v2`–`v6` from earlier updates; they're in the
-   `supabase/` folder, safe, and won't touch your data.)
+2. **Run the database update.** In **Supabase → SQL Editor → New query**, run
+   **`supabase/migration-v7.sql`** (it adds the `racket_images` table that holds the photos).
+   If you skipped earlier updates, run the lower-numbered ones too. Safe; won't touch your data.
+3. **Add the photos.** Open **Admin → Rackets → ⇪ Racket photos**, and either click
+   **"Load 4 starter photos"** (the four we prepared) or select your own PNG/JPG files. See the
+   *Racket photos* section below.
 3. **(Optional) Turn on extras:** DeepSeek (cheaper AI), **Google sign-in**, and
    **email confirmation** for new sign-ups — each has its own section below.
 
@@ -273,7 +275,31 @@ feel, durability, tension), each 0–100; gauges go in one cell like `1.30|1.25`
 
 ---
 
-## Clubs (community)
+## Racket photos
+
+You can now attach a replica photo to any racket. They're stored right in your Supabase database
+(no extra storage service or bill), and they show up in three places: the **Setup String preview**
+(the head of the racket, on a light background, instead of the drawn mock), the **Saved
+Combination** cards in the Racket Room (laid on their side so they aren't too tall), and any
+**My Racket** entry that has one.
+
+**To add photos in bulk (the fast way):**
+1. **Admin → Rackets → ⇪ Racket photos.**
+2. Click **"Load 4 starter photos"** to import the four we prepared, or click **Choose Files** and
+   select as many racket images as you like (PNG, JPG or WebP).
+3. Each file is **auto-matched to a racket by its file name** — e.g. `Wilson-RF01.png` →
+   *Wilson RF 01*, `Yonex-Vcore98-2026.png` → *Yonex VCORE 98*. Name your files like
+   `Brand-Model-Year.png` and matching just works.
+4. Review the matches (a dropdown lets you fix or set any that didn't match), then **Import**.
+
+Images are automatically resized and compressed (to WebP, ~60–80 KB each) in your browser before
+upload, so they stay small and load fast. A 📷 appears next to any racket that has a photo. To
+replace one, just upload a new file for that racket; to remove it, there's a delete option.
+
+> Tip: file names are matched loosely (case and separators don't matter, and it splits
+> letters from numbers), so `HEAD_speed_MP.png` and `head-speed-mp.png` both find *Head Speed MP*.
+
+---
 
 The **Clubs** tab is where players share with each other. It works the moment you run the v5
 migration — no extra setup:
