@@ -277,6 +277,7 @@
 
   function showView() {
     const u = window.TLAuth.user;
+    const ld = $("authLoading"); if (ld) ld.style.display = "none";
     $("authView").classList.toggle("hide", !!u);
     $("roomView").classList.toggle("hide", !u);
     if (u) { renderUsernameStrip(); loadMyRackets(); loadCombos(); loadFeedback(); }

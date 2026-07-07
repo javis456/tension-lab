@@ -24,10 +24,10 @@ everything — three quick steps:
 
 1. **Update the code.** In your GitHub repo, upload the new files (drag the contents of this
    folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
-2. **Run the database updates.** In **Supabase → SQL Editor → New query**, run any migration
-   files in the `supabase/` folder you haven't run yet — for this version that's
-   **`supabase/migration-v6.sql`** (post captions + the one-time username-change lock). If you
-   skipped earlier updates, run the lower-numbered ones too. They're safe and won't touch your data.
+2. **Run the database updates.** This update is **front-end only** — the new **Knowledge**
+   page, the English/Thai toggle, and the login-flash fix need **no new database migration**.
+   (Just make sure you've already run migrations `v2`–`v6` from earlier updates; they're in the
+   `supabase/` folder, safe, and won't touch your data.)
 3. **(Optional) Turn on extras:** DeepSeek (cheaper AI), **Google sign-in**, and
    **email confirmation** for new sign-ups — each has its own section below.
 
@@ -287,6 +287,19 @@ migration — no extra setup:
   invite players by username and approve join requests.**
 - Because posts show usernames, **every account now has a username** — new sign-ups pick one at
   registration; existing/Google users are asked to choose one the first time they open Clubs.
+
+---
+
+---
+
+## Knowledge page & Thai language
+
+The new **Knowledge** tab (top nav) is a public, read-anytime guide to choosing strings —
+materials, shape, gauge, tension, the racket's role, hybrids, how-to-choose principles, and a
+short, honest explanation of how the rating is built and how far to trust it — with simple
+diagrams. A toggle in the top-right switches the whole page between **English and ไทย (Thai)**,
+and the choice is remembered. (Right now the toggle covers the Knowledge page; if you'd like the
+rest of the site translated too, that can be added later.)
 
 ---
 

@@ -545,3 +545,32 @@ table.cmp th.fav-col,table.cmp td.fav-col{width:36px;text-align:center;padding-l
 .uname-strip .us-note{font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint)}
 .uname-strip .us-lock{margin-left:auto}
 #modalBody textarea{width:100%;font-family:"IBM Plex Sans";font-size:13px;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);resize:vertical}
+
+/* ---- auth loading (prevents login/guest flash on tab switch) ---- */
+.auth-loading{display:flex;justify-content:center;padding:60px 0}
+.auth-loading .spinner{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--teal);animation:tl-spin .7s linear infinite}
+@keyframes tl-spin{to{transform:rotate(360deg)}}
+
+/* ======================= KNOWLEDGE PAGE ======================= */
+.k-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.lang-toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff;flex:0 0 auto}
+.lang-toggle button{border:0;background:none;padding:8px 16px;font-family:"IBM Plex Sans";font-size:13px;cursor:pointer;color:var(--ink-soft)}
+.lang-toggle button.on{background:var(--teal);color:#fff}
+#kContent{max-width:760px}
+.k-h{font-family:"Space Grotesk";font-weight:600;font-size:20px;margin:34px 0 10px;padding-top:14px;border-top:1px solid var(--line-soft);color:var(--ink)}
+.k-h:first-child{border-top:0;padding-top:0;margin-top:14px}
+.k-p{font-size:15px;line-height:1.7;color:var(--ink-soft);margin:0 0 14px}
+.k-ul{margin:0 0 14px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.k-ul li{position:relative;padding-left:22px;font-size:14.5px;line-height:1.6;color:var(--ink-soft)}
+.k-ul li::before{content:"";position:absolute;left:4px;top:9px;width:7px;height:7px;border-radius:2px;background:var(--teal);transform:rotate(45deg)}
+.k-callout{background:var(--signal-soft);border-left:4px solid var(--signal);border-radius:0 10px 10px 0;padding:14px 18px;font-size:14.5px;line-height:1.7;color:var(--ink);margin:6px 0 16px}
+.k-fig{margin:8px 0 20px;padding:16px;border:1px solid var(--line-soft);border-radius:12px;background:var(--panel)}
+.k-fig figcaption{margin-top:8px;font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-faint);text-align:center;line-height:1.5}
+.k-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;margin:6px 0 16px}
+.k-card{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line-soft);border-radius:10px;padding:12px 14px;background:#fff}
+.k-swatch{width:12px;height:12px;border-radius:3px;flex:0 0 auto;margin-top:4px;border:1px solid rgba(0,0,0,.1)}
+.k-card-t{font-family:"Space Grotesk";font-weight:600;font-size:14px;color:var(--ink)}
+.k-card-d{font-size:13px;line-height:1.55;color:var(--ink-soft);margin-top:2px}
+/* Thai typography */
+.lang-th #kContent,.lang-th #kTitle,.lang-th #kLede,.lang-th .k-card-t{font-family:"Noto Sans Thai","IBM Plex Sans",sans-serif}
+.lang-th .k-p,.lang-th .k-ul li,.lang-th .k-callout{line-height:1.85}

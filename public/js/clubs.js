@@ -225,6 +225,7 @@
   /* ---------- boot ---------- */
   async function boot() {
     await (window.TLAuth.ready || Promise.resolve());
+    const ld = document.getElementById("clubLoading"); if (ld) ld.style.display = "none";
     const u = window.TLAuth.user;
     if (!u) { $("guestView").classList.remove("hide"); $("clubsView").classList.add("hide"); return; }
     if (!u.username) { $("clubsView").classList.add("hide"); needUsername(); return; }

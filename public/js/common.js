@@ -133,6 +133,11 @@
       a.href = "/clubs.html"; a.setAttribute("data-nav", "clubs"); a.textContent = "Clubs";
       nav.appendChild(a);
     }
+    if (nav && !nav.querySelector('a[data-nav="knowledge"]')) {
+      const a = document.createElement("a");
+      a.href = "/knowledge.html"; a.setAttribute("data-nav", "knowledge"); a.textContent = "Knowledge";
+      nav.appendChild(a);
+    }
     const page = document.body.getAttribute("data-page");
     document.querySelectorAll(".site-nav a[data-nav]").forEach((a) => {
       a.classList.toggle("on", a.getAttribute("data-nav") === page);
@@ -190,7 +195,9 @@
     el.innerHTML = '<span class="eye">\u{1F441}</span> ' + Number(visits).toLocaleString() + " visits";
   }
 
-  function initChrome() { markActiveNav(); renderAuth(); visitorCounter(); }
+  // Don't render the auth area until the /me check resolves — otherwise the
+  // logged-out "Log in" buttons flash for a moment before "Racket Room" appears.
+  function initChrome() { markActiveNav(); visitorCounter(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initChrome);
   else initChrome();
 })();
