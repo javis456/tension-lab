@@ -24,12 +24,12 @@ everything — three quick steps:
 
 1. **Update the code.** In your GitHub repo, upload the new files (drag the contents of this
    folder in and commit — it replaces the old ones). Vercel redeploys automatically in ~1 min.
-2. **Run the database update.** In **Supabase → SQL Editor → New query**, run
-   **`supabase/migration-v7.sql`** (it adds the `racket_images` table that holds the photos).
-   If you skipped earlier updates, run the lower-numbered ones too. Safe; won't touch your data.
-3. **Add the photos.** Open **Admin → Rackets → ⇪ Racket photos**, and either click
-   **"Load 4 starter photos"** (the four we prepared) or select your own PNG/JPG files. See the
-   *Racket photos* section below.
+2. **No database change needed** for this update — the in-racket string preview, the default
+   racket, the "pick from catalog" My Racket, and the **Download Result** button are all
+   front-end + a bundled image. (Just make sure you've already run migrations `v2`–`v7` from
+   earlier updates; they're in the `supabase/` folder and safe.)
+3. **Photos:** if you haven't yet, add racket photos via **Admin → Rackets → ⇪ Racket photos**
+   (see *Racket photos* below). Any racket without a photo now shows a clean default racket.
 3. **(Optional) Turn on extras:** DeepSeek (cheaper AI), **Google sign-in**, and
    **email confirmation** for new sign-ups — each has its own section below.
 
@@ -291,6 +291,8 @@ Combination** cards in the Racket Room (laid on their side so they aren't too ta
    *Wilson RF 01*, `Yonex-Vcore98-2026.png` → *Yonex VCORE 98*. Name your files like
    `Brand-Model-Year.png` and matching just works.
 4. Review the matches (a dropdown lets you fix or set any that didn't match), then **Import**.
+
+The selected racket now shows in the **Setup String preview with your chosen strings drawn inside the frame** (in the string's colour), and every racket without a photo shows a clean **default racket**. Players can also hit **⬇ Download Result** at the bottom of Setup String to save a shareable 9:16 image of their setup.
 
 Images are automatically resized and compressed (to WebP, ~60–80 KB each) in your browser before
 upload, so they stay small and load fast. A 📷 appears next to any racket that has a photo. To

@@ -78,56 +78,58 @@
   const closeModal = () => $("modalBack").classList.add("hide");
 
   /* ---------------- MY RACKET ---------------- */
+  const racketImg = (r) => r.has_image ? "/api/rackets/" + r.id + "/image" : "/img/default-racket.png";
   function myRacketCard(r) {
-    const photo = r.has_image
-      ? '<div class="racket-lay"><img src="/api/rackets/' + r.id + '/image" alt="' + esc(r.brand) + " " + esc(r.name) + '" loading="lazy"></div>'
-      : "";
-    return '<div class="item-card racket-item">' + photo +
+    return '<div class="item-card racket-item">' +
+      '<div class="racket-lay"><img src="' + racketImg(r) + '" alt="' + esc(r.brand) + " " + esc(r.name) + '" loading="lazy"></div>' +
       '<div class="racket-item-row"><div>' +
       '<div class="b">' + esc(r.brand) + " " + esc(r.name) + (r.ver ? " " + esc(r.ver) : "") + "</div>" +
       '<div class="meta">' + esc(r.mains) + "\u00d7" + esc(r.crosses) + " \u00b7 " + esc(r.head_size) +
         " in\u00b2 \u00b7 RA " + esc(r.ra) + " \u00b7 " + esc(r.weight) + "g</div></div>" +
       '<div class="actions">' +
         '<a class="btn ghost sm" href="/?racket=' + r.id + '">Use in Setup</a>' +
-        '<button class="btn link del-myracket" data-id="' + r.id + '">Delete</button>' +
+        '<button class="btn link del-myracket" data-id="' + r.id + '">Remove</button>' +
       "</div></div></div>";
   }
   async function loadMyRackets() {
     try {
-      const d = await api("/api/my/rackets");
+      const d = await api("/api/favorites");
       $("myRacketsList").innerHTML = d.rackets.length ? d.rackets.map(myRacketCard).join("")
-        : '<div class="empty-note">No rackets added yet. Add your frame and it\u2019ll top the picker in Setup String.</div>';
+        : '<div class="empty-note">No rackets yet. Tap \u201c＋ Add my racket\u201d and pick your frame \u2014 it\u2019ll show up here and top the picker in Setup String.</div>';
       document.querySelectorAll(".del-myracket").forEach((b) => b.addEventListener("click", async () => {
-        if (!confirm("Delete this racket?")) return;
-        try { await api("/api/my/rackets/" + b.getAttribute("data-id"), { method: "DELETE" }); toast("Deleted"); loadMyRackets(); }
+        try { await api("/api/favorites/racket/" + b.getAttribute("data-id"), { method: "DELETE" }); toast("Removed"); loadMyRackets(); }
         catch (e) { toast(e.message, true); }
       }));
     } catch (e) { $("myRacketsList").innerHTML = '<div class="empty-note">Could not load your rackets.</div>'; }
   }
   const fld = (id, label, val, attrs) =>
     '<div><label>' + label + "</label><input id=\"" + id + "\" value=\"" + esc(val == null ? "" : val) + "\" " + (attrs || "") + "></div>";
-  function addRacketModal() {
-    openModal("Add my racket",
-      '<div class="field row2">' + fld("r_brand", "Brand", "", 'autocomplete="off"') + fld("r_name", "Model name", "", 'autocomplete="off"') + "</div>" +
-      '<div class="field row2">' + fld("r_ver", "Version (optional)", "", "") + fld("r_year", "Year (optional)", "", 'type="number"') + "</div>" +
-      '<div class="field row2">' + fld("r_mains", "Mains", 16, 'type="number"') + fld("r_crosses", "Crosses", 19, 'type="number"') + "</div>" +
-      '<div class="field row2">' + fld("r_head", "Head size (in²)", 100, 'type="number"') + fld("r_ra", "Stiffness (RA)", 66, 'type="number"') + "</div>" +
-      '<div class="field">' + fld("r_weight", "Weight (g)", 300, 'type="number"') + "</div>" +
-      '<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">' +
-        '<button class="btn ghost" id="mCancel">Cancel</button><button class="btn" id="mSaveRacket">Save racket</button></div>');
-    $("mCancel").addEventListener("click", closeModal);
-    $("mSaveRacket").addEventListener("click", saveMyRacket);
-  }
-  async function saveMyRacket() {
-    const body = {
-      brand: $("r_brand").value.trim(), name: $("r_name").value.trim(), ver: $("r_ver").value.trim(),
-      year: $("r_year").value ? Number($("r_year").value) : null,
-      mains: Number($("r_mains").value), crosses: Number($("r_crosses").value),
-      head_size: Number($("r_head").value), ra: Number($("r_ra").value), weight: Number($("r_weight").value),
+  let allRacketsCache = null;
+  async function addRacketModal() {
+    openModal("Add a racket",
+      '<p class="sub" style="font-size:12.5px;color:var(--ink-soft);margin:0 0 10px">Pick your frame from the catalog. It\u2019ll appear here and jump to the top of the racket picker in Setup String.</p>' +
+      '<input id="rkSearch" placeholder="Search rackets\u2026" autocomplete="off" style="width:100%;margin-bottom:10px">' +
+      '<div id="rkPick" class="rk-pick"><div class="empty-note" style="border:0">Loading\u2026</div></div>');
+    if (!allRacketsCache) {
+      try { allRacketsCache = (await api("/api/rackets")).rackets.filter((r) => r.brand !== "\u2014"); }
+      catch (_) { allRacketsCache = []; }
+    }
+    const render = (q) => {
+      const ql = q.trim().toLowerCase();
+      const list = allRacketsCache.filter((r) => !ql || (r.brand + " " + r.name + " " + (r.ver || "")).toLowerCase().includes(ql)).slice(0, 60);
+      $("rkPick").innerHTML = list.length ? list.map((r) =>
+        '<button class="rk-pick-row" data-id="' + r.id + '">' +
+          '<span class="rp-b">' + esc(r.brand) + " " + esc(r.name) + (r.ver ? " " + esc(r.ver) : "") + "</span>" +
+          '<span class="rp-m">' + esc(r.mains) + "\u00d7" + esc(r.crosses) + " \u00b7 " + esc(r.head_size) + " in\u00b2" + (r.has_image ? " \u00b7 \uD83D\uDCF7" : "") + "</span>" +
+        "</button>").join("") : '<div class="empty-note" style="border:0">No matches.</div>';
+      document.querySelectorAll(".rk-pick-row").forEach((b) => b.addEventListener("click", async () => {
+        try { await api("/api/favorites", { method: "POST", body: JSON.stringify({ kind: "racket", item_id: Number(b.getAttribute("data-id")) }) }); toast("Added to My Racket"); closeModal(); loadMyRackets(); }
+        catch (e) { toast(e.message, true); }
+      }));
     };
-    if (!body.brand || !body.name) return toast("Brand and name are required.", true);
-    try { await api("/api/my/rackets", { method: "POST", body: JSON.stringify(body) }); toast("Racket added"); closeModal(); loadMyRackets(); }
-    catch (e) { toast(e.message, true); }
+    render("");
+    $("rkSearch").addEventListener("input", (e) => render(e.target.value));
+    $("rkSearch").focus();
   }
 
   /* ---------------- SAVED COMBINATION ---------------- */
@@ -144,8 +146,8 @@
     const strings = c.hybrid ? esc(c.mains) + " / " + esc(c.crosses) : esc(c.mains || "—");
     const tens = c.hybrid ? (c.mainTension + " / " + c.crossTension + " lb") : (c.mainTension != null ? c.mainTension + " lb" : "");
     const rid = c.racketId;
-    const photo = (rid != null && racketImgSet && racketImgSet.has(rid))
-      ? '<div class="racket-lay"><img src="/api/rackets/' + rid + '/image" alt="' + esc(c.racket || "") + '" loading="lazy"></div>' : "";
+    const src = (rid != null && racketImgSet && racketImgSet.has(rid)) ? "/api/rackets/" + rid + "/image" : "/img/default-racket.png";
+    const photo = '<div class="racket-lay"><img src="' + src + '" alt="' + esc(c.racket || "") + '" loading="lazy"></div>';
     return '<div class="item-card racket-item">' + photo +
       '<div class="racket-item-row"><div>' +
       '<div class="b">' + esc(s.name) + "</div>" +

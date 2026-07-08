@@ -9,9 +9,11 @@ router.use(requireAuth);
 router.get("/", async (req, res, next) => {
   try {
     const rackets = (await many(
-      `SELECT r.* FROM favorites f JOIN rackets r ON r.id = f.item_id
+      `SELECT r.*, (ri.racket_id IS NOT NULL) AS has_image FROM favorites f
+       JOIN rackets r ON r.id = f.item_id
+       LEFT JOIN racket_images ri ON ri.racket_id = r.id
        WHERE f.user_id=$1 AND f.kind='racket' ORDER BY lower(r.brand), lower(r.name)`, [req.user.id]
-    )).map(mapRacket);
+    )).map((r) => Object.assign(mapRacket(r), { has_image: r.has_image }));
     const strings = (await many(
       `SELECT s.* FROM favorites f JOIN strings s ON s.id = f.item_id
        WHERE f.user_id=$1 AND f.kind='string' ORDER BY lower(s.brand), lower(s.name)`, [req.user.id]

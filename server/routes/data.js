@@ -10,10 +10,14 @@ const allStrings = async () =>
   (await many("SELECT * FROM strings ORDER BY lower(brand), lower(name)")).map(mapString);
 const allRackets = async (userId) => {
   const rows = await many(
-    `SELECT r.*, (ri.racket_id IS NOT NULL) AS has_image FROM rackets r
+    `SELECT r.*, (ri.racket_id IS NOT NULL) AS has_image,
+            (fav.item_id IS NOT NULL) AS faved
+     FROM rackets r
      LEFT JOIN racket_images ri ON ri.racket_id = r.id
+     LEFT JOIN favorites fav ON fav.item_id = r.id AND fav.kind='racket' AND fav.user_id = $1
      WHERE r.owner_user_id IS NULL OR r.owner_user_id = $1
-     ORDER BY COALESCE(r.owner_user_id = $1, false) DESC, (r.brand='—') DESC, lower(r.brand), lower(r.name), r.year`,
+     ORDER BY (fav.item_id IS NOT NULL) DESC, COALESCE(r.owner_user_id = $1, false) DESC,
+              (r.brand='—') DESC, lower(r.brand), lower(r.name), r.year`,
     [userId == null ? -1 : userId]
   );
   return rows.map((r) => Object.assign(mapRacket(r), { mine: userId != null && r.owner_user_id === userId, has_image: r.has_image }));
