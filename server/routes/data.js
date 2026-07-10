@@ -11,6 +11,7 @@ const allStrings = async () =>
 const allRackets = async (userId) => {
   const rows = await many(
     `SELECT r.*, (ri.racket_id IS NOT NULL) AS has_image,
+            EXTRACT(EPOCH FROM ri.updated_at)::bigint AS img_v,
             (fav.item_id IS NOT NULL) AS faved
      FROM rackets r
      LEFT JOIN racket_images ri ON ri.racket_id = r.id
@@ -20,7 +21,7 @@ const allRackets = async (userId) => {
               (r.brand='—') DESC, lower(r.brand), lower(r.name), r.year`,
     [userId == null ? -1 : userId]
   );
-  return rows.map((r) => Object.assign(mapRacket(r), { mine: userId != null && r.owner_user_id === userId, has_image: r.has_image }));
+  return rows.map((r) => Object.assign(mapRacket(r), { mine: userId != null && r.owner_user_id === userId, has_image: r.has_image, img_v: r.img_v }));
 };
 
 router.get("/strings", wrap(async (req, res) => res.json({ strings: await allStrings() })));
@@ -86,7 +87,7 @@ router.get("/rackets/:id/image", wrap(async (req, res) => {
   if (!r.rows.length) return res.status(404).end();
   const row = r.rows[0];
   res.set("Content-Type", row.content_type || "image/png");
-  res.set("Cache-Control", "public, max-age=86400");
+  res.set("Cache-Control", "public, max-age=604800"); // URLs are versioned (?v=) so replacements bust cache
   res.send(row.data); // pg returns bytea as a Buffer
 }));
 

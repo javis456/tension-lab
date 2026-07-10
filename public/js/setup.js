@@ -200,7 +200,7 @@ const BED = { cx:500, cy:548, rx:322, ry:410 };
 
 function racketImgSrc(racket){
   return (racket && racket.img && racket._id != null)
-    ? "/api/rackets/" + racket._id + "/image"
+    ? "/api/rackets/" + racket._id + "/image" + (racket.img_v ? "?v=" + racket.img_v : "")
     : "/img/default-racket.png";
 }
 
@@ -243,87 +243,125 @@ function renderBed(res){
 /* ============================================================
    DOWNLOAD RESULT — 9:16 shareable image
    ============================================================ */
+function initFloatDl(){
+  const f=document.getElementById("dlFloat"); if(!f) return;
+  f.addEventListener("click", downloadResult);
+  let lastY=window.scrollY;
+  window.addEventListener("scroll", ()=>{
+    const y=window.scrollY;
+    const flags=document.getElementById("warnBox");
+    const reached = flags ? flags.getBoundingClientRect().top < window.innerHeight*0.7 : false;
+    if(reached){ f.classList.remove("show"); }        // reached Flags & fit -> hide
+    else if(y < lastY-3){ f.classList.remove("show"); } // scrolling up -> cancel
+    else if(y > lastY+3 && y > 260){ f.classList.add("show"); } // scrolling down -> show
+    lastY=y;
+  }, {passive:true});
+}
+
 function loadImg(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src; }); }
 
 async function downloadResult(){
   const res = LAST_RES;
   if(!res){ window.TL.toast("Configure a setup first.", true); return; }
-  const btn=$("dlResultBtn"); const label=btn.textContent; btn.disabled=true; btn.textContent="Preparing…";
-  try {
-    try { await document.fonts.ready; } catch(_){}
+  const btn=$("dlResultBtn"); const label=btn?btn.textContent:""; if(btn){btn.disabled=true;btn.textContent="Preparing…";}
+  const fbtn=$("dlFloat"); if(fbtn) fbtn.disabled=true;
+  try{
+    try{ await document.fonts.ready; }catch(_){}
     const W=1080,H=1920, c=document.createElement("canvas"); c.width=W;c.height=H;
     const ctx=c.getContext("2d"); ctx.textBaseline="middle";
     const TEAL="#0B6E5F", INK="#16302a", FAINT="#6f817b";
 
-    // background
     const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,"#F7FAF8"); g.addColorStop(1,"#E6EEE9");
     ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-
-    // header
-    ctx.fillStyle=TEAL; ctx.fillRect(0,0,W,148);
+    ctx.fillStyle=TEAL; ctx.fillRect(0,0,W,140);
     ctx.textAlign="left"; ctx.fillStyle="#fff";
-    ctx.font='700 46px "Space Grotesk", sans-serif'; ctx.fillText("TENSION·LAB", 60, 64);
-    ctx.font='400 23px "IBM Plex Mono", monospace'; ctx.fillStyle="rgba(255,255,255,.82)"; ctx.fillText("by Mensin Tennis", 62, 104);
+    ctx.font='700 44px "Space Grotesk", sans-serif'; ctx.fillText("TENSION\u00B7LAB", 60, 60);
+    ctx.font='400 22px "IBM Plex Mono", monospace'; ctx.fillStyle="rgba(255,255,255,.82)"; ctx.fillText("by Mensin Tennis", 62, 98);
 
-    // racket + strings
     const img = await loadImg(racketImgSrc(res.racket));
-    const rw=440, rh=rw*(img.height/img.width), rX=(W-rw)/2, rY=200;
-    ctx.save(); ctx.shadowColor="rgba(16,40,34,.22)"; ctx.shadowBlur=34; ctx.shadowOffsetY=16;
-    ctx.drawImage(img, rX, rY, rw, rh); ctx.restore();
-    // string bed on the racket
-    const ecx=rX+BED.cx/1000*rw, ecy=rY+BED.cy/2022*rh, eX=(BED.rx/1000*rw)*0.94, eY=(BED.ry/2022*rh)*0.94;
-    ctx.save(); ctx.beginPath(); ctx.ellipse(ecx,ecy,eX,eY,0,0,Math.PI*2); ctx.clip();
-    ctx.fillStyle="rgba(18,28,26,0.08)"; ctx.fill();
+    const RW=470, RH=RW*(img.height/img.width), RX=(W-RW)/2, RY=356;
+    const bx=RX+BED.cx/1000*RW, by=RY+BED.cy/2022*RH;
+
+    // radar UNDER the racket, centered on the string bed
+    const keys=ATTRS.map(a=>a.k), labels=ATTRS.map(a=>a.nm), n=keys.length;
+    const R=350, ang=(i)=>(-Math.PI/2)+i*2*Math.PI/n, pt=(i,r)=>[bx+r*Math.cos(ang(i)), by+r*Math.sin(ang(i))];
+    ctx.strokeStyle="#c9d6d0"; ctx.lineWidth=1.5;
+    for(let g2=1;g2<=4;g2++){ ctx.beginPath(); for(let i=0;i<n;i++){const p=pt(i,R*g2/4); i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);} ctx.closePath(); ctx.stroke(); }
+    for(let i=0;i<n;i++){ const p=pt(i,R); ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(p[0],p[1]); ctx.stroke(); }
+    ctx.beginPath(); for(let i=0;i<n;i++){const p=pt(i,R*(res.scores[keys[i]]/100)); i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);} ctx.closePath();
+    ctx.fillStyle="rgba(11,110,95,.16)"; ctx.fill(); ctx.strokeStyle=TEAL; ctx.lineWidth=3; ctx.stroke();
+
+    // racket on top (clearly visible)
+    ctx.save(); ctx.shadowColor="rgba(16,40,34,.22)"; ctx.shadowBlur=30; ctx.shadowOffsetY=14;
+    ctx.drawImage(img, RX, RY, RW, RH); ctx.restore();
+    const eX=(BED.rx/1000*RW)*0.94, eY=(BED.ry/2022*RH)*0.94;
+    ctx.save(); ctx.beginPath(); ctx.ellipse(bx,by,eX,eY,0,0,Math.PI*2); ctx.clip();
     const nM=res.racket.pat[0], nC=res.racket.pat[1];
-    ctx.lineCap="round"; ctx.lineWidth=Math.max(2.2, rw*0.0065);
-    ctx.strokeStyle=MAT[res.sCross.m].hex;
-    for(let i=0;i<nC;i++){ const y=ecy-eY+(i+0.5)*(2*eY/nC); ctx.beginPath(); ctx.moveTo(ecx-eX,y); ctx.lineTo(ecx+eX,y); ctx.stroke(); }
-    ctx.strokeStyle=MAT[res.sMain.m].hex;
-    for(let i=0;i<nM;i++){ const x=ecx-eX+(i+0.5)*(2*eX/nM); ctx.beginPath(); ctx.moveTo(x,ecy-eY); ctx.lineTo(x,ecy+eY); ctx.stroke(); }
+    ctx.lineCap="round"; ctx.lineWidth=Math.max(2.2, RW*0.0062);
+    ctx.strokeStyle=MAT[res.sCross.m].hex; for(let i=0;i<nC;i++){const y=by-eY+(i+0.5)*(2*eY/nC); ctx.beginPath();ctx.moveTo(bx-eX,y);ctx.lineTo(bx+eX,y);ctx.stroke();}
+    ctx.strokeStyle=MAT[res.sMain.m].hex; for(let i=0;i<nM;i++){const x=bx-eX+(i+0.5)*(2*eX/nM); ctx.beginPath();ctx.moveTo(x,by-eY);ctx.lineTo(x,by+eY);ctx.stroke();}
     ctx.restore();
+
+    // radar label chips (white pills, on top)
+    for(let i=0;i<n;i++){
+      const p=pt(i,R+30), lx=p[0], ly=p[1];
+      const txt=labels[i], val=String(res.scores[keys[i]]);
+      ctx.font='600 17px "IBM Plex Sans", sans-serif';
+      const chipW=Math.max(ctx.measureText(txt).width, 44)+26, chipH=52;
+      ctx.fillStyle="rgba(255,255,255,.93)"; ctx.strokeStyle="#dbe4df"; ctx.lineWidth=1.5;
+      roundRect(ctx, lx-chipW/2, ly-chipH/2, chipW, chipH, 12); ctx.fill(); ctx.stroke();
+      ctx.textAlign="center";
+      ctx.fillStyle=FAINT; ctx.font='600 17px "IBM Plex Sans", sans-serif'; ctx.fillText(txt, lx, ly-11);
+      ctx.fillStyle=TEAL; ctx.font='800 22px "IBM Plex Mono", monospace'; ctx.fillText(val, lx, ly+11);
+    }
 
     // title
     ctx.textAlign="center";
-    let y=rY+rh+70;
-    ctx.fillStyle=INK; ctx.font='700 60px "Space Grotesk", sans-serif'; ctx.fillText(archetype(res.scores).h, W/2, y);
-    y+=52; ctx.fillStyle=FAINT; ctx.font='500 30px "IBM Plex Sans", sans-serif'; ctx.fillText(racketName(res.racket), W/2, y);
+    let y=RY+RH+56;
+    ctx.fillStyle=INK; ctx.font='800 58px "Space Grotesk", sans-serif'; ctx.fillText(archetype(res.scores).h, W/2, y);
+    y+=46; ctx.fillStyle=FAINT; ctx.font='500 30px "IBM Plex Sans", sans-serif'; ctx.fillText(racketName(res.racket), W/2, y);
 
-    // string setup
-    y+=68; ctx.font='600 27px "IBM Plex Sans", sans-serif';
-    const mainTxt = res.sMain.b+" "+res.sMain.n+"  ·  "+gaugeLabel(state.mainG)+"  ·  "+state.tMain+" lb";
-    ctx.fillStyle=TEAL; ctx.font='700 20px "IBM Plex Mono", monospace'; ctx.fillText(state.hybrid?"MAINS":"FULL BED", W/2, y);
-    y+=34; ctx.fillStyle=INK; ctx.font='600 28px "IBM Plex Sans", sans-serif'; ctx.fillText(mainTxt, W/2, y);
-    if(state.hybrid){
-      y+=44; ctx.fillStyle=TEAL; ctx.font='700 20px "IBM Plex Mono", monospace'; ctx.fillText("CROSSES", W/2, y);
-      y+=34; ctx.fillStyle=INK; ctx.font='600 28px "IBM Plex Sans", sans-serif';
-      ctx.fillText(res.sCross.b+" "+res.sCross.n+"  ·  "+gaugeLabel(state.crossG)+"  ·  "+state.tCross+" lb", W/2, y);
-    }
+    // string choices (bigger) + cross-section
+    y+=64;
+    y=drawStringChoice(ctx, W/2, y, state.hybrid?"MAINS":"FULL BED", res.sMain, state.mainG, state.tMain, TEAL, INK, FAINT);
+    if(state.hybrid){ y+=20; y=drawStringChoice(ctx, W/2, y, "CROSSES", res.sCross, state.crossG, state.tCross, TEAL, INK, FAINT); }
 
-    // radar
-    const keys=ATTRS.map(a=>a.k), labels=ATTRS.map(a=>a.nm), n=keys.length;
-    const ccx=W/2, ccy=1590, R=180;
-    const ang=(i)=>(-Math.PI/2)+i*2*Math.PI/n;
-    const pt=(i,r)=>[ccx+r*Math.cos(ang(i)), ccy+r*Math.sin(ang(i))];
-    ctx.strokeStyle="#cdd8d3"; ctx.lineWidth=1.5;
-    for(let g2=1;g2<=4;g2++){ ctx.beginPath(); for(let i=0;i<n;i++){ const [x,yy]=pt(i,R*g2/4); i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);} ctx.closePath(); ctx.stroke(); }
-    for(let i=0;i<n;i++){ const [x,yy]=pt(i,R); ctx.beginPath(); ctx.moveTo(ccx,ccy); ctx.lineTo(x,yy); ctx.stroke(); }
-    // score polygon
-    ctx.beginPath(); for(let i=0;i<n;i++){ const [x,yy]=pt(i,R*(res.scores[keys[i]]/100)); i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);} ctx.closePath();
-    ctx.fillStyle="rgba(11,110,95,.20)"; ctx.fill(); ctx.strokeStyle=TEAL; ctx.lineWidth=3; ctx.stroke();
-    // labels + values
-    ctx.font='600 22px "IBM Plex Sans", sans-serif';
-    for(let i=0;i<n;i++){ const [lx,ly]=pt(i,R+34); ctx.fillStyle=FAINT; ctx.textAlign=Math.abs(lx-ccx)<10?"center":(lx>ccx?"left":"right");
-      ctx.fillText(labels[i], lx, ly-8); ctx.fillStyle=INK; ctx.font='700 22px "IBM Plex Mono", monospace'; ctx.fillText(res.scores[keys[i]], lx, ly+14); ctx.font='600 22px "IBM Plex Sans", sans-serif'; }
-
-    // footer CTA
-    ctx.fillStyle=TEAL; ctx.fillRect(0,H-118,W,118);
+    ctx.fillStyle=TEAL; ctx.fillRect(0,H-116,W,116);
     ctx.textAlign="center"; ctx.fillStyle="#fff";
-    ctx.font='700 32px "Space Grotesk", sans-serif'; ctx.fillText("Build your own → tension-lab.vercel.app", W/2, H-70);
-    ctx.font='400 21px "IBM Plex Mono", monospace'; ctx.fillStyle="rgba(255,255,255,.82)"; ctx.fillText("Tension Lab · by Mensin Tennis", W/2, H-34);
+    ctx.font='700 32px "Space Grotesk", sans-serif'; ctx.fillText("Build your own \u2192 tension-lab.vercel.app", W/2, H-68);
+    ctx.font='400 21px "IBM Plex Mono", monospace'; ctx.fillStyle="rgba(255,255,255,.82)"; ctx.fillText("Tension Lab \u00B7 by Mensin Tennis", W/2, H-32);
 
-    await new Promise((r)=>c.toBlob((blob)=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="tension-lab-setup.jpg"; document.body.appendChild(a); a.click(); a.remove(); r(); }, "image/jpeg", 0.92));
-  } catch(e){ window.TL.toast("Could not build the image.", true); }
-  finally { btn.disabled=false; btn.textContent=label; }
+    await new Promise((r)=>c.toBlob((blob)=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="tension-lab-setup.jpg"; document.body.appendChild(a); a.click(); a.remove(); r(); }, "image/jpeg", 0.93));
+  }catch(e){ window.TL.toast("Could not build the image.", true); }
+  finally{ if(btn){btn.disabled=false;btn.textContent=label;} if(fbtn) fbtn.disabled=false; }
+}
+
+function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function drawStringShape(ctx,x,y,s,geo,color){
+  ctx.save(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=Math.max(2.4,s*0.16); ctx.lineJoin="round";
+  if(geo==="shaped"){ ctx.beginPath(); for(let i=0;i<6;i++){const a=-Math.PI/2+i*Math.PI/3,px=x+s*Math.cos(a),py=y+s*Math.sin(a); i?ctx.lineTo(px,py):ctx.moveTo(px,py);} ctx.closePath(); ctx.stroke(); }
+  else if(geo==="textured"){ ctx.beginPath(); ctx.arc(x,y,s*0.72,0,Math.PI*2); ctx.stroke(); for(let i=0;i<8;i++){const a=i*Math.PI/4; ctx.beginPath(); ctx.arc(x+s*0.72*Math.cos(a),y+s*0.72*Math.sin(a),s*0.16,0,Math.PI*2); ctx.fill();} }
+  else { ctx.beginPath(); ctx.arc(x,y,s*0.8,0,Math.PI*2); ctx.stroke(); ctx.globalAlpha=0.45; ctx.beginPath(); ctx.arc(x,y,s*0.38,0,Math.PI*2); ctx.stroke(); }
+  ctx.restore();
+}
+function geoName(geo){ return geo==="shaped"?"shaped profile":geo==="textured"?"textured profile":"round profile"; }
+
+function drawStringChoice(ctx, cx, y, label, s, gauge, tension, TEAL, INK, FAINT){
+  ctx.textAlign="center";
+  ctx.fillStyle=TEAL; ctx.font='700 22px "IBM Plex Mono", monospace'; ctx.fillText(label, cx, y);
+  y+=42; ctx.fillStyle=INK; ctx.font='700 36px "IBM Plex Sans", sans-serif'; ctx.fillText(s.b+" "+s.n, cx, y);
+  y+=46;
+  const info=gaugeLabel(gauge)+" \u00B7 "+tension+" lb";
+  ctx.font='600 30px "IBM Plex Sans", sans-serif'; const infoW=ctx.measureText(info).width;
+  const geoLbl=geoName(s.geo); ctx.font='500 26px "IBM Plex Sans", sans-serif'; const geoW=ctx.measureText(geoLbl).width;
+  const iconS=18, gap=16, total=infoW+gap+iconS*2+gap+geoW, startX=cx-total/2;
+  ctx.textAlign="left"; ctx.fillStyle=INK; ctx.font='600 30px "IBM Plex Sans", sans-serif'; ctx.fillText(info, startX, y);
+  const iconX=startX+infoW+gap+iconS;
+  drawStringShape(ctx, iconX, y, iconS, s.geo, MAT[s.m].hex);
+  ctx.fillStyle=FAINT; ctx.font='500 26px "IBM Plex Sans", sans-serif'; ctx.fillText(geoLbl, iconX+iconS+gap*0.6, y);
+  ctx.textAlign="center";
+  return y+10;
 }
 
 /* ============================================================
@@ -794,7 +832,7 @@ async function boot(){
     const [rs, rr] = await Promise.all([ fetch('/api/strings'), fetch('/api/rackets') ]);
     const sj = await rs.json(), rj = await rr.json();
     STRINGS = sj.strings.map(s=>({ b:s.brand, n:s.name, m:s.material, geo:s.geo, g:s.gauges, tier:s.tier, kf:s.known_for, cl:s.claim, r:s.ratings, price:s.price_usd, _id:s.id }));
-    RACKETS = rj.rackets.map(r=>({ id:(r.slug||('r'+r.id)), b:r.brand, n:r.name, ver:r.ver, year:r.year, pat:[r.mains,r.crosses], ra:r.ra, hs:r.head_size, wt:r.weight, char:r.char, kf:r.known_for, _id:r.id, img:!!r.has_image }));
+    RACKETS = rj.rackets.map(r=>({ id:(r.slug||('r'+r.id)), b:r.brand, n:r.name, ver:r.ver, year:r.year, pat:[r.mains,r.crosses], ra:r.ra, hs:r.head_size, wt:r.weight, char:r.char, kf:r.known_for, _id:r.id, img:!!r.has_image, img_v:r.img_v }));
   }catch(e){
     document.querySelector('.wrap').insertAdjacentHTML('afterbegin','<div class="panel" style="color:var(--red)">Could not load the catalog. Is the server running?</div>');
     return;
@@ -806,8 +844,31 @@ async function boot(){
   wireSaveSetup();
   wireSaveFavorites();
   const dl=$("dlResultBtn"); if(dl) dl.addEventListener("click", downloadResult);
+  initFloatDl();
   await applyQueryPreselect();
+  loadPeoplesPicks();
   (window.TLAuth && window.TLAuth.ready || Promise.resolve()).then(refreshFavChips);
+}
+
+async function loadPeoplesPicks(){
+  const box=document.getElementById('peoplesPicks'); if(!box) return;
+  let combos=[];
+  try{ combos=((await (await fetch('/api/explore/top')).json()).combos)||[]; }catch(_){ }
+  if(!combos.length){ box.classList.add('hide'); return; }
+  const esc=(window.TL&&window.TL.esc)||((s)=>String(s));
+  const card=(c)=>'<button type="button" class="pick" data-cfg="'+encodeURIComponent(JSON.stringify(c.config))+'">'+
+    '<span class="pick-name">'+esc(c.name)+'</span>'+
+    '<span class="pick-meta">'+esc(c.archetype)+' · @'+esc(c.username)+' · \u25B2'+c.votes+'</span></button>';
+  const first=combos.slice(0,5), rest=combos.slice(5);
+  box.classList.remove('hide');
+  box.innerHTML='<div class="pp-head">People\u2019s picks <span>top shared setups \u2014 tap to load</span></div>'+
+    '<div class="pp-list">'+first.map(card).join('')+'</div>'+
+    (rest.length?'<div class="pp-rest hide">'+rest.map(card).join('')+'</div><button class="pp-more" type="button">\uFF0B '+rest.length+' more people\u2019s picks</button>':'');
+  box.querySelectorAll('.pick').forEach(b=>b.addEventListener('click',()=>{
+    try{ loadSetupConfig(JSON.parse(decodeURIComponent(b.getAttribute('data-cfg')))); window.scrollTo({top:0,behavior:'smooth'}); }catch(_){ }
+  }));
+  const more=box.querySelector('.pp-more');
+  if(more) more.addEventListener('click',()=>{ box.querySelector('.pp-rest').classList.remove('hide'); more.classList.add('hide'); });
 }
 
 function loadSetupConfig(cfg){
@@ -860,7 +921,12 @@ function wireSaveFavorites(){
 }
 async function applyQueryPreselect(){
   const p=new URLSearchParams(location.search);
-  const sid=p.get('setup'), rid=p.get('racket'), mid=p.get('main');
+  const sid=p.get('setup'), rid=p.get('racket'), mid=p.get('main'), eid=p.get('explore');
+  if(eid){
+    try{ const r=await fetch('/api/explore/'+encodeURIComponent(eid));
+      if(r.ok){ const d=await r.json(); if(d.combo && d.combo.config){ loadSetupConfig(d.combo.config); return; } }
+    }catch(_){}
+  }
   if(sid){
     try{
       const r=await fetch('/api/setups/'+encodeURIComponent(sid));

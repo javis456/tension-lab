@@ -128,6 +128,11 @@
 
   function markActiveNav() {
     const nav = document.querySelector(".site-nav");
+    if (nav && !nav.querySelector('a[data-nav="explore"]')) {
+      const a = document.createElement("a");
+      a.href = "/explore.html"; a.setAttribute("data-nav", "explore"); a.textContent = "Explore";
+      nav.appendChild(a);
+    }
     if (nav && !nav.querySelector('a[data-nav="clubs"]')) {
       const a = document.createElement("a");
       a.href = "/clubs.html"; a.setAttribute("data-nav", "clubs"); a.textContent = "Clubs";

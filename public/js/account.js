@@ -78,7 +78,7 @@
   const closeModal = () => $("modalBack").classList.add("hide");
 
   /* ---------------- MY RACKET ---------------- */
-  const racketImg = (r) => r.has_image ? "/api/rackets/" + r.id + "/image" : "/img/default-racket.png";
+  const racketImg = (r) => r.has_image ? "/api/rackets/" + r.id + "/image" + (r.img_v ? "?v=" + r.img_v : "") : "/img/default-racket.png";
   function myRacketCard(r) {
     return '<div class="item-card racket-item">' +
       '<div class="racket-lay"><img src="' + racketImg(r) + '" alt="' + esc(r.brand) + " " + esc(r.name) + '" loading="lazy"></div>' +
@@ -134,11 +134,11 @@
 
   /* ---------------- SAVED COMBINATION ---------------- */
   let setupsCache = [];
-  let racketImgSet = null; // ids of catalog rackets that have a photo
+  let racketImgSet = null; // map of racketId -> img_v for catalog rackets that have a photo
   async function ensureRacketImgSet() {
     if (racketImgSet) return racketImgSet;
-    racketImgSet = new Set();
-    try { (await api("/api/rackets")).rackets.forEach((r) => { if (r.has_image) racketImgSet.add(r.id); }); } catch (_) {}
+    racketImgSet = new Map();
+    try { (await api("/api/rackets")).rackets.forEach((r) => { if (r.has_image) racketImgSet.set(r.id, r.img_v || 1); }); } catch (_) {}
     return racketImgSet;
   }
   function comboCard(s) {
@@ -146,7 +146,7 @@
     const strings = c.hybrid ? esc(c.mains) + " / " + esc(c.crosses) : esc(c.mains || "—");
     const tens = c.hybrid ? (c.mainTension + " / " + c.crossTension + " lb") : (c.mainTension != null ? c.mainTension + " lb" : "");
     const rid = c.racketId;
-    const src = (rid != null && racketImgSet && racketImgSet.has(rid)) ? "/api/rackets/" + rid + "/image" : "/img/default-racket.png";
+    const src = (rid != null && racketImgSet && racketImgSet.has(rid)) ? "/api/rackets/" + rid + "/image?v=" + racketImgSet.get(rid) : "/img/default-racket.png";
     const photo = '<div class="racket-lay"><img src="' + src + '" alt="' + esc(c.racket || "") + '" loading="lazy"></div>';
     return '<div class="item-card racket-item">' + photo +
       '<div class="racket-item-row"><div>' +

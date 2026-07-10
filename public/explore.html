@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tension Lab · Explore — string combinations from players</title>
+<meta name="description" content="Discover string setups shared by other players — vote, comment, and find the best racket pairings.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-page="explore">
+
+<header class="site">
+  <div class="site-in">
+    <a class="site-brand" href="/"><span class="logo">TENSION<b>·</b>LAB</span><span class="by">by Mensin Tennis</span></a>
+    <nav class="site-nav">
+      <a href="/" data-nav="setup">Setup String</a>
+      <a href="/compare.html" data-nav="compare">Strings</a>
+    </nav>
+    <div class="site-auth" id="siteAuth"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <h1>🔎 Explore</h1>
+    <p>String combinations shared by other players. Vote, comment, and see which rackets people pair them with. Popular setups also power the <b>“Start from a goal”</b> suggestions in Setup String.</p>
+  </div>
+
+  <div class="exp-bar">
+    <div class="exp-sorts" id="expSorts">
+      <button data-sort="popular" class="on">Popular</button>
+      <button data-sort="hot">Hot</button>
+      <button data-sort="new">New</button>
+    </div>
+    <button class="btn sig" id="shareBtn">＋ Share a combination</button>
+  </div>
+  <div class="exp-tags" id="expTags"></div>
+
+  <div id="expList" class="exp-list"><div class="empty-note">Loading…</div></div>
+</div>
+
+<div class="modal-back hide" id="modalBack">
+  <div class="modal"><div class="modal-h"><h3 id="modalTitle"></h3><button class="modal-x" id="modalX">✕</button></div>
+  <div class="modal-b" id="modalBody"></div></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer class="site">
+  <div class="foot-in">
+    <div class="fb">TENSION<b>·</b>LAB <span style="font-family:'IBM Plex Mono';font-weight:400;font-size:11px;color:var(--ink-faint)">by Mensin Tennis</span></div>
+    <div>Player-shared setups. Scores are structured estimates, not lab measurements.</div>
+  </div>
+</footer>
+
+<script src="/js/common.js"></script>
+<script src="/js/engine.js"></script>
+<script src="/js/chart.js"></script>
+<script src="/js/explore.js"></script>
+</body>
+</html>

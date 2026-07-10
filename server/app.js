@@ -23,6 +23,7 @@ app.get("/api/config", (req, res) =>
   }));
 
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/explore", require("./routes/explore"));
 app.use("/api", require("./routes/data"));
 app.use("/api/setups", require("./routes/setups"));
 app.use("/api/favorites", require("./routes/favorites"));

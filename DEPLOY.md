@@ -343,3 +343,13 @@ Supabase and is safe across redeploys.
 ---
 
 *Tension Lab — by Mensin Tennis.*
+
+### New this update: Explore + previews
+- **Explore** (`/explore.html`): players share string combinations (name + description), others
+  vote, comment, and suggest rackets to pair. Popular setups also feed the “Start from a goal”
+  suggestions on Setup String. Requires running `migration-v8.sql`.
+- **Setup String preview** now shows your chosen strings drawn inside your racket photo; any racket
+  without a photo uses a bundled default racket.
+- **My Racket** is now “pick from the catalog” (no manual entry) and shows the racket photo.
+- **Download Result** exports a 9:16 image (racket + stats radar + string cross-sections).
+- **Photo replace**: re-uploading a racket photo replaces the old one and refreshes instantly.
