@@ -353,6 +353,9 @@ Supabase and is safe across redeploys.
 - **My Racket** is now “pick from the catalog” (no manual entry) and shows the racket photo.
 - **Download Result** exports a 9:16 image (racket + stats radar + string cross-sections).
 - **Photo replace**: re-uploading a racket photo replaces the old one and refreshes instantly.
+- **Download catalog (admin)**: **⬇ Download strings / Download rackets** in the admin toolbar
+  exports the full current catalog as a CSV using the exact same columns as the bulk-upload
+  template — so you can download, edit in a spreadsheet, and re-import. No migration needed.
 - **Bulk share to Explore (admin)**: in the admin portal, **⇪ Bulk to Explore** imports many
   combinations from one CSV. You only fill the setup (racket, main string, gauges, tension,
   optional cross + paired rackets); the engine computes the 7 scores, the archetype, and the

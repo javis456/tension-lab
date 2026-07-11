@@ -233,6 +233,7 @@
     tab = t;
     document.querySelectorAll("#adminTabs button").forEach((b) =>
       b.classList.toggle("on", b.getAttribute("data-tab") === t));
+    const ex = $("exportBtn"); if (ex) ex.textContent = "⬇ Download " + t;
     if (!skipLoad) loadList();
   }
 
@@ -323,6 +324,22 @@
         (d.skipped ? " (" + d.skipped + " skipped)" : ""));
       closeModal(); loadList();
     } catch (e) { toast(e.message, true); btn.disabled = false; btn.textContent = "Import"; }
+  }
+
+  /* ---------------- export current catalog as CSV ---------------- */
+  async function exportCsv() {
+    const type = tab === "rackets" ? "rackets" : "strings";
+    const btn = $("exportBtn"); const label = btn.textContent; btn.disabled = true; btn.textContent = "Preparing…";
+    try {
+      const r = await fetch("/api/admin/export/" + type, { credentials: "include" });
+      if (!r.ok) throw new Error("Export failed (" + r.status + ")");
+      const blob = await r.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = "tension-lab-" + type + ".csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      toast("Downloaded all " + type);
+    } catch (e) { toast(e.message, true); }
+    finally { btn.disabled = false; btn.textContent = label; }
   }
 
   /* ---------------- bulk share to Explore ---------------- */
@@ -533,6 +550,7 @@
     $("bulkBtn").addEventListener("click", bulkModal);
     $("photoBulkBtn").addEventListener("click", photoModal);
     $("exploreBulkBtn").addEventListener("click", exploreBulkModal);
+    $("exportBtn").addEventListener("click", exportCsv);
     document.querySelectorAll("#adminTabs button").forEach((b) =>
       b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
     $("addBtn").addEventListener("click", openAdd);

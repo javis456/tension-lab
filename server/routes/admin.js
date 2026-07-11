@@ -256,6 +256,35 @@ router.post("/ai-lookup", async (req, res) => {
   }
 });
 
+/* ============================================================
+   EXPORT current catalog as CSV (admin) — same columns as the
+   bulk-upload template, so you can download, edit, and re-import.
+   ============================================================ */
+const EXPORT_STRING_COLS = ["brand", "name", "material", "geo", "gauges", "tier", "price_usd", "known_for", "claim", "pw", "co", "sp", "cf", "fe", "du", "tm"];
+const EXPORT_RACKET_COLS = ["brand", "name", "ver", "year", "mains", "crosses", "head_size", "ra", "weight", "char", "known_for"];
+const csvCell = (v) => { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+
+router.get("/export/:type", wrap(async (req, res) => {
+  const type = req.params.type === "rackets" ? "rackets" : "strings";
+  let cols, rows;
+  if (type === "strings") {
+    cols = EXPORT_STRING_COLS;
+    const list = (await many("SELECT * FROM strings ORDER BY lower(brand), lower(name)")).map(mapString);
+    rows = list.map((s) => {
+      const g = (s.gauges || []).join("|"), r = s.ratings || {};
+      return [s.brand, s.name, s.material, s.geo, g, s.tier, s.price_usd, s.known_for, s.claim, r.pw, r.co, r.sp, r.cf, r.fe, r.du, r.tm];
+    });
+  } else {
+    cols = EXPORT_RACKET_COLS;
+    const list = (await many("SELECT * FROM rackets WHERE owner_user_id IS NULL ORDER BY (brand='\u2014') DESC, lower(brand), lower(name), year")).map(mapRacket);
+    rows = list.map((r) => [r.brand, r.name, r.ver, r.year, r.mains, r.crosses, r.head_size, r.ra, r.weight, r.char, r.known_for]);
+  }
+  const csv = cols.join(",") + "\n" + rows.map((r) => r.map(csvCell).join(",")).join("\n") + "\n";
+  res.set("Content-Type", "text/csv; charset=utf-8");
+  res.set("Content-Disposition", 'attachment; filename="tension-lab-' + type + '.csv"');
+  res.send(csv);
+}));
+
 /* ---- strings CRUD ---- */
 router.post("/strings", wrap(async (req, res) => {
   const s = normalizeString(req.body);
