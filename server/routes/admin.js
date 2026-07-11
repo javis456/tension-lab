@@ -1,7 +1,9 @@
 const express = require("express");
-const { one, query, mapString, mapRacket } = require("../db");
+const { one, many, query, mapString, mapRacket } = require("../db");
 const { requireAdmin } = require("../middleware/auth");
 const ai = require("../ai");
+const engine = require("../../public/js/engine");
+const { computeTags, scoreFromConfig } = require("../combo");
 const { normalizeString, normalizeRacket } = ai;
 const { parseToRecords } = require("../csv");
 const { MATERIALS, GEOMETRIES } = require("../rubric");
@@ -106,6 +108,136 @@ router.post("/bulk/commit", async (req, res) => {
 
 const wrap = (fn) => (req, res) => Promise.resolve(fn(req, res)).catch((e) =>
   res.status(500).json({ error: e.message || "Server error." }));
+
+/* ============================================================
+   BULK SHARE TO EXPLORE (admin only)
+   The template only needs setup ingredients — the engine computes
+   the 7 scores, archetype, and tags automatically.
+   ============================================================ */
+const EXPLORE_ALIASES = {
+  name: ["name", "combo", "combination", "title"],
+  description: ["description", "desc", "notes", "note"],
+  racket: ["racket", "frame"],
+  main_string: ["mainstring", "main", "mains", "string", "mainstrings"],
+  main_gauge: ["maingauge", "gauge", "maingaugemm"],
+  main_tension: ["maintension", "tension", "lb", "lbs", "maintensionlb"],
+  cross_string: ["crossstring", "cross", "crosses"],
+  cross_gauge: ["crossgauge", "crossgaugemm"],
+  cross_tension: ["crosstension", "crosstensionlb"],
+  pair_rackets: ["pairrackets", "rackets", "pairedrackets", "pairwith", "pairswith", "alsopairswith"],
+  username: ["username", "user", "by", "sharer", "author"],
+};
+const EXPLORE_REQUIRED = ["name", "racket", "main_string"];
+
+const norm = (s) => String(s == null ? "" : s).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+function resolve(list, input, disp) {
+  const n = norm(input);
+  if (!n) return null;
+  for (const it of list) { // exact on "brand name ver" / "brand name" / "name"
+    if ([norm(disp(it, true)), norm(disp(it, false)), norm(it.name)].includes(n)) return it;
+  }
+  for (const it of list) { const bn = norm(disp(it, false)); if (bn.startsWith(n) || n.startsWith(bn)) return it; }
+  const tin = n.split(" ");
+  for (const it of list) { const toks = new Set(norm(disp(it, true)).split(" ")); if (tin.every((t) => toks.has(t))) return it; }
+  return null;
+}
+const racketDisp = (r, withVer) => (r.brand === "\u2014" ? r.name : r.brand + " " + r.name + (withVer && r.ver ? " " + r.ver : ""));
+const stringDisp = (s) => s.brand + " " + s.name;
+
+async function buildExploreRow(rec, rackets, strings, users, adminId) {
+  const errors = [], warnings = [];
+  const name = String(rec.name || "").trim().slice(0, 42);
+  let description = String(rec.description || "").trim();
+  if (description.split(/\s+/).filter(Boolean).length > 100) { description = description.split(/\s+/).slice(0, 100).join(" "); warnings.push("description trimmed to 100 words"); }
+  if (!name) errors.push("missing name");
+  const racket = resolve(rackets, rec.racket, racketDisp);
+  if (!racket) errors.push('racket not found: "' + (rec.racket || "") + '"');
+  const main = resolve(strings, rec.main_string, (s) => stringDisp(s));
+  if (!main) errors.push('main string not found: "' + (rec.main_string || "") + '"');
+  const hasCross = rec.cross_string && String(rec.cross_string).trim();
+  const cross = hasCross ? resolve(strings, rec.cross_string, (s) => stringDisp(s)) : null;
+  if (hasCross && !cross) warnings.push('cross string not found: "' + rec.cross_string + '" → treated as full bed');
+
+  let userId = adminId, byName = null;
+  if (rec.username && String(rec.username).trim()) {
+    const u = users.find((x) => norm(x.username) === norm(rec.username));
+    if (u) { userId = u.id; byName = u.username; } else warnings.push('user "' + rec.username + '" not found → shared as you');
+  }
+  if (errors.length) return { line: rec.__line, ok: false, errors, warnings, data: { name } };
+
+  const gnum = (v, def) => { const m = String(v || "").match(/[\d.]+/); return m ? Number(m[0]) : def; };
+  const midGauge = (s) => (s.gauges && s.gauges[Math.floor(s.gauges.length / 2)]) || 1.25;
+  const config = {
+    racket: racketDisp(racket, true), racketId: racket.id,
+    hybrid: !!(hasCross && cross),
+    mains: stringDisp(main), mainId: main.id,
+    mainGauge: gnum(rec.main_gauge, midGauge(main)), mainTension: gnum(rec.main_tension, 52),
+    crosses: hasCross && cross ? stringDisp(cross) : null, crossId: cross ? cross.id : null,
+    crossGauge: cross ? gnum(rec.cross_gauge, midGauge(cross)) : null,
+    crossTension: cross ? gnum(rec.cross_tension, gnum(rec.main_tension, 52)) : null,
+  };
+  const scored = await scoreFromConfig(config);
+  if (!scored) { errors.push("could not score this setup"); return { line: rec.__line, ok: false, errors, warnings, data: { name } }; }
+  const arche = engine.archetype(scored.scores).h;
+  const tags = computeTags(scored.scores, config, scored.mainMaterial);
+
+  // paired rackets: primary + any listed
+  const racketIds = [racket.id];
+  if (rec.pair_rackets) {
+    for (const p of String(rec.pair_rackets).split(/[;|]/).map((x) => x.trim()).filter(Boolean)) {
+      const pr = resolve(rackets, p, racketDisp);
+      if (pr && !racketIds.includes(pr.id)) racketIds.push(pr.id);
+      else if (!pr) warnings.push('pair racket not found: "' + p + '"');
+    }
+  }
+  return {
+    line: rec.__line, ok: true, errors, warnings,
+    data: { name, archetype: arche, racket: config.racket, main: config.mains, hybrid: config.hybrid, tags, by: byName },
+    built: { userId, name, description, config, scores: scored.scores, archetype: arche, tags, racketIds },
+  };
+}
+
+async function exploreCatalogs() {
+  const rackets = (await many("SELECT id, brand, name, ver FROM rackets")).map((r) => r);
+  const strings = (await many("SELECT id, brand, name, gauges FROM strings")).map(mapString);
+  const users = await many("SELECT id, username FROM users WHERE username IS NOT NULL");
+  return { rackets, strings, users };
+}
+function exploreParse(csv) {
+  const { parseToRecords } = require("../csv");
+  return parseToRecords(csv, EXPLORE_ALIASES, EXPLORE_REQUIRED);
+}
+
+router.post("/explore/bulk/preview", wrap(async (req, res) => {
+  const { headerMap, records, missingRequired } = exploreParse(String(req.body.csv || ""));
+  if (missingRequired.length) return res.status(400).json({ error: "Your header row must include: " + missingRequired.join(", ") + ". Use the template so columns are named correctly." });
+  const { rackets, strings, users } = await exploreCatalogs();
+  const rows = [];
+  for (const rec of records.slice(0, 1000)) rows.push(await buildExploreRow(rec, rackets, strings, users, req.user.id));
+  const mapping = {}; for (const k in headerMap) mapping[k] = headerMap[k].header;
+  res.json({ mapping, total: records.length, valid: rows.filter((r) => r.ok).length, rows });
+}));
+
+router.post("/explore/bulk/commit", wrap(async (req, res) => {
+  const { records, missingRequired } = exploreParse(String(req.body.csv || ""));
+  if (missingRequired.length) return res.status(400).json({ error: "Missing required column(s): " + missingRequired.join(", ") });
+  const { rackets, strings, users } = await exploreCatalogs();
+  let inserted = 0; const errors = [];
+  for (const rec of records) {
+    const r = await buildExploreRow(rec, rackets, strings, users, req.user.id);
+    if (!r.ok) { errors.push({ line: r.line, error: r.errors.join(", ") }); continue; }
+    const b = r.built;
+    try {
+      const row = await one(
+        "INSERT INTO explore_combos (user_id,name,description,config,scores,archetype,tags) VALUES ($1,$2,$3,$4::jsonb,$5::jsonb,$6,$7) RETURNING id",
+        [b.userId, b.name, b.description, JSON.stringify(b.config), JSON.stringify(b.scores), b.archetype, b.tags]);
+      for (const rid of b.racketIds) await query("INSERT INTO combo_rackets (combo_id,racket_id,added_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING", [row.id, rid, b.userId]);
+      inserted++;
+    } catch (e) { errors.push({ line: r.line, error: e.message }); }
+  }
+  res.json({ inserted, skipped: records.length - inserted, errors });
+}));
+
 
 /* ---- which AI models are available (for the admin dropdown) ---- */
 router.get("/ai-models", (req, res) => res.json(ai.availableModels()));

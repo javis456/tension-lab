@@ -325,6 +325,77 @@
     } catch (e) { toast(e.message, true); btn.disabled = false; btn.textContent = "Import"; }
   }
 
+  /* ---------------- bulk share to Explore ---------------- */
+  const EXP_COLS = ["name", "description", "racket", "main_string", "main_gauge", "main_tension", "cross_string", "cross_gauge", "cross_tension", "pair_rackets", "username"];
+  const EXP_EX1 = ["Tour control benchmark", "Classic full-poly control setup for flat hitters.", "Wilson Pro Staff 97", "Luxilon ALU Power", "1.25", "54", "", "", "", "Babolat Pure Strike;Head Prestige", ""];
+  const EXP_EX2 = ["Arm-friendly spin hybrid", "Poly mains for bite, gut crosses for pocketing and comfort.", "Babolat Pure Aero", "Solinco Hyper-G", "1.20", "48", "Wilson Natural Gut", "1.30", "52", "Yonex EZONE 98", ""];
+  let expCsv = "";
+
+  function exploreTemplate() {
+    const csv = EXP_COLS.join(",") + "\n" + EXP_EX1.map(csvCell).join(",") + "\n" + EXP_EX2.map(csvCell).join(",") + "\n";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = "tension-lab-explore-template.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  function exploreBulkModal() {
+    openModal("Bulk share to Explore",
+      '<p class="sub" style="font-size:12.5px;color:var(--ink-soft);line-height:1.55;margin:0 0 10px">' +
+        'Dump many combinations at once. You only fill the <b>setup</b> — the engine computes the 7 scores, the archetype summary, and the tags automatically. ' +
+        'Racket &amp; string names are matched to the catalog (e.g. <span style="font-family:IBM Plex Mono;font-size:11px">Yonex VCORE 98</span>). ' +
+        'Required: <b>name</b>, <b>racket</b>, <b>main_string</b>. Leave <b>cross_string</b> blank for a full bed. ' +
+        '<b>pair_rackets</b> = extra rackets to pair (separate with <span style="font-family:IBM Plex Mono">;</span>). ' +
+        '<b>username</b> optional (defaults to you).</p>' +
+      '<div style="font-family:IBM Plex Mono;font-size:11px;color:var(--ink-faint);margin-bottom:12px;word-break:break-word">' + EXP_COLS.join(", ") + "</div>" +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">' +
+        '<button class="btn ghost sm" id="expTplBtn">⬇ Download template</button>' +
+        '<input type="file" id="expFile" accept=".csv,text/csv" style="font-size:12.5px">' +
+      "</div>" +
+      '<div id="expPreview"></div>' +
+      '<div id="expActions" style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px"><button class="btn ghost" id="mCancel">Close</button></div>');
+    $("expTplBtn").addEventListener("click", exploreTemplate);
+    $("mCancel").addEventListener("click", closeModal);
+    $("expFile").addEventListener("change", async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      expCsv = await f.text(); await expPreview();
+    });
+  }
+
+  async function expPreview() {
+    const box = $("expPreview");
+    box.innerHTML = '<div class="empty-note" style="border:0">Reading & scoring…</div>';
+    let d;
+    try { d = await api("/api/admin/explore/bulk/preview", { method: "POST", body: JSON.stringify({ csv: expCsv }) }); }
+    catch (e) { box.innerHTML = '<div class="form-msg err">' + esc(e.message) + "</div>"; return; }
+    const mapping = Object.entries(d.mapping).map(([k, h]) => k + " ← “" + esc(h) + "”").join(" · ");
+    const rows = d.rows.map((r) => {
+      const status = r.ok ? '<span class="badge live">ok</span>' : '<span class="badge est">skip</span>';
+      const detail = r.ok
+        ? "<b>" + esc(r.data.name) + "</b> — " + esc(r.data.archetype) + '<div class="bulk-warn" style="color:var(--ink-faint)">' + esc(r.data.racket) + (r.data.hybrid ? " · hybrid" : "") + " · " + (r.data.tags || []).join(", ") + "</div>"
+        : esc(r.errors.join(", "));
+      const warn = r.warnings && r.warnings.length ? '<div class="bulk-warn">' + esc(r.warnings.join("; ")) + "</div>" : "";
+      return '<tr><td class="num">' + r.line + "</td><td>" + status + "</td><td>" + detail + warn + "</td></tr>";
+    }).join("");
+    box.innerHTML =
+      '<div class="bulk-map"><b>Column mapping:</b> ' + (mapping || "—") + "</div>" +
+      '<div class="bulk-sum">' + d.valid + " of " + d.total + " combinations ready to share</div>" +
+      '<div class="table-scroll" style="max-height:300px;overflow:auto"><table class="cmp" style="min-width:0"><thead><tr><th class="num">Line</th><th>Status</th><th>Result</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+    const acts = $("expActions");
+    acts.innerHTML = '<button class="btn ghost" id="mCancel">Close</button>' + (d.valid > 0 ? '<button class="btn sig" id="expCommit">Share ' + d.valid + " combinations</button>" : "");
+    $("mCancel").addEventListener("click", closeModal);
+    if (d.valid > 0) $("expCommit").addEventListener("click", expCommit);
+  }
+
+  async function expCommit() {
+    const btn = $("expCommit"); btn.disabled = true; btn.textContent = "Sharing…";
+    try {
+      const d = await api("/api/admin/explore/bulk/commit", { method: "POST", body: JSON.stringify({ csv: expCsv }) });
+      toast("Shared " + d.inserted + " combinations to Explore" + (d.skipped ? " (" + d.skipped + " skipped)" : ""));
+      closeModal();
+    } catch (e) { toast(e.message, true); btn.disabled = false; btn.textContent = "Share"; }
+  }
+
   /* ---------------- bulk racket photos ---------------- */
   const STARTER_PHOTOS = ["Head-Speed-mp-2026.png", "Tecnifibre-tfight-300s.png", "Wilson-RF01.png", "Yonex-Vcore98-2026.png"];
   let photoRackets = [];   // catalog for matching
@@ -461,6 +532,7 @@
     loadAiModels();
     $("bulkBtn").addEventListener("click", bulkModal);
     $("photoBulkBtn").addEventListener("click", photoModal);
+    $("exploreBulkBtn").addEventListener("click", exploreBulkModal);
     document.querySelectorAll("#adminTabs button").forEach((b) =>
       b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
     $("addBtn").addEventListener("click", openAdd);

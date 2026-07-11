@@ -2,31 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { one, many, query } = require("../db");
 const { currentUser, requireAuth, wrap } = require("../middleware/auth");
-
-/* archetype + tags (server-side mirror of the engine's summary) */
-function archetype(s) {
-  const { co, pw, sp, cf } = s;
-  if (co >= 78 && sp >= 78) return { h: "Heavy-spin control", tag: ["control", "spin"] };
-  if (co >= 80) return { h: "Precision control", tag: ["control"] };
-  if (pw >= 78 && cf >= 72) return { h: "Comfort power", tag: ["power", "comfort"] };
-  if (sp >= 82) return { h: "Spin-first", tag: ["spin"] };
-  if (pw >= 76) return { h: "Power setup", tag: ["power"] };
-  if (cf >= 78) return { h: "Comfort-first", tag: ["comfort"] };
-  return { h: "Balanced all-court", tag: ["all-round"] };
-}
-function computeTags(scores, config, mat) {
-  const t = new Set(archetype(scores).tag);
-  if (config.hybrid) t.add("hybrid");
-  if (mat) { if (String(mat).includes("poly")) t.add("poly"); else if (["gut", "multi", "zyex"].includes(mat)) t.add("soft"); }
-  if (scores.sp >= 75) t.add("spin");
-  if (scores.cf >= 70) t.add("arm-friendly");
-  if (scores.pw >= 72) t.add("power");
-  if (scores.co >= 78) t.add("control");
-  if (scores.du >= 78) t.add("durable");
-  return [...t];
-}
-// the fixed set of filter tags the UI offers
-const ALL_TAGS = ["control", "spin", "power", "comfort", "all-round", "hybrid", "poly", "soft", "arm-friendly", "durable"];
+const { archetype, computeTags, ALL_TAGS } = require("../combo");
 
 async function topRacket(comboId) {
   return one(
